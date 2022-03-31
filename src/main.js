@@ -1,8 +1,20 @@
 import Vue from 'vue'
 import App from './App.vue'
-
+import router from './router'
+import store from './store'
+import ElementUI from 'element-ui';
+import 'nprogress/nprogress.css'
+import './mock/mockServer.js'
+import 'element-ui/lib/theme-chalk/index.css';
+import * as echarts from 'echarts';
+Vue.use(ElementUI);
+Vue.prototype.$echarts = echarts
+console.log(echarts)
 Vue.config.productionTip = false
 
 new Vue({
-  render: h => h(App),
+  router,
+  store,
+  render: h => h(App)
 }).$mount('#app')
+console.log(process.env.VUE_APP_BASE_API);
