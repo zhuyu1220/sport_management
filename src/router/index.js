@@ -1,10 +1,15 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import store from '@/store'
 // import Home from '@/views/Home.vue'
 // import Login from '@/views/Login'
 Vue.use(VueRouter)
 
 const routes = [
+  {
+    path: '/login',
+    component:()=>import('@/views/login/index')
+  },
   {
     path: '/',
     redirect:"/home",
@@ -12,26 +17,41 @@ const routes = [
     children: [{
       path: "home",
       name:"Home",
-      component: () => import('@/views/Home.vue'),
-    }]
+      component: () => import('@/views/home/index'),
+    }, {
+        path: "trackSystem",
+        name: "TrackSystem",
+        component: () => import('@/views/home/trackSystem'),
+        
+    }, {
+      path: "timingSystem",
+      name: "TimingSystem",
+      component: () => import('@/views/home/timingSystem'),
+      
+  }, {
+    path: "aiTestSystem",
+    name: "AiTestSystem",
+    component: () => import('@/views/home/aiTestSystem'),
+    
+}]
   },
-  {
-    path: "/login",
-    name: "Login",
-    component:()=>import('@/views/Login.vue')
-  },
-  {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  }
+
+
 ]
 
 const router = new VueRouter({
   routes
 })
 
+router.beforeEach((to, from, next) => {
+  //  页面刷新或者跳转的时候,获取用户信息
+  if (store.state.user.token) {
+    store.dispatch('getUserInfo')
+
+  } else { 
+  }
+
+  next()
+   
+})
 export default router

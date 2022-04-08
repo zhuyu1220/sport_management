@@ -1,12 +1,12 @@
 <template>
   <div>
-          登录页面
+      AI
   </div>
 </template>
 
 <script>
 export default {
-   name:"Login"
+
 }
 </script>
 

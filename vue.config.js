@@ -1,13 +1,14 @@
 const path = require("path");
-const resolve = dir => path.join(__dirname, dir);
-console.log(resolve);
 
+const resolve = dir => path.join(__dirname, dir);
+console.log(resolve); 
 // const IS_PROD = ["production", "prod"].includes(process.env.NODE_ENV);
 module.exports = {
+    lintOnSave: false,
     devServer:{
         proxy:{
-            '/api':{
-                target: ' http://192.0.5.6:8088/',//代理地址，这里设置的地址会代替axios中设置的baseURL
+            '/api': {
+                target: ' http://192.168.0.120:9898',//代理地址，这里设置的地址会代替axios中设置的baseURL
                 changeOrigin: true,
                 pathRewrite: {
                     '^/api': '/' 
@@ -29,7 +30,9 @@ module.exports = {
           .set("@store", resolve("src/store"))
           .set("@layouts", resolve("src/layouts"))
           .set("@static", resolve("src/static"));
-     }
-    
+    },
+   
+
+  
 
 }

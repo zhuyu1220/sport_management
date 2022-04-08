@@ -1,2 +1,2 @@
-export {login} from './login'
+export {login,getUserInfo,logout} from './user.js'
 

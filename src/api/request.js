@@ -15,11 +15,11 @@ request.interceptors.request.use((config) => {
 // 对服务器传回来的数据做处理  第一个回调参数是成功回调,第二个参数则是失败回调
 request.interceptors.response.use((data) => {
     nProgress.done()
-    console.log(data)
+
     return data;
   
  }, (res) => {
-    console.log(res)
+  
 })
   
 
