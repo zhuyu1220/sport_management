@@ -112,14 +112,16 @@ export default {
         align-items: center;
     }
    .userform::v-deep .el-input__inner{
-     font-size: 22px;
+         width: 512px;
      margin-bottom: 20px;
-    margin-left: 0;
+     margin-left: 0;   
+     padding-left: 45px;
      border: none;
      border-radius: 0;
      border-bottom: 1px solid #CCCCCC;
-      width: 512px;
-      padding-left: 45px
+
+     font-size: 22px;
+
    }
 
   }

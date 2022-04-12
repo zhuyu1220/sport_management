@@ -69,20 +69,22 @@ export default {
       margin: 0 auto ;
    }
    .tip{
+    position: relative;
      height: 300px;
+     display: flex;
+   //   align-items: center;
      background: url("~@/assets/home/图层 15@2x.png")no-repeat;
      background-size: cover;
-     position: relative;
       &>div{
          position: absolute;
          right: 5%;
-         top: 30%;
-      
       }
       .date ,.weather {
+         margin-top: 40px;
          display: flex;
          align-items: center;
-   
+         font-size: 26px;
+        
       }
       .date  span:nth-of-type(2){
          font-size: 12px;

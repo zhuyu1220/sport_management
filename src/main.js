@@ -7,6 +7,7 @@ import 'nprogress/nprogress.css'
 import './mock/mockServer.js'
 import 'element-ui/lib/theme-chalk/index.css';
 import * as echarts from 'echarts';
+
 Vue.use(ElementUI);
 Vue.prototype.$echarts = echarts
 console.log(echarts)
