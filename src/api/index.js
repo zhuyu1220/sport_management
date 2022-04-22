@@ -1,2 +1,5 @@
-export {login,getUserInfo,logout} from './user.js'
-
+export {login,getMenuByToken,logout}   from './login'
+export {getWeather,getModules,getEquStatus,getRaceProject,getTableVal,getChartVal} from './home'
+export  { editOrg,getOrgByParentId,getStudentByOrgId,syncStudentGradeInfo}  from './organization'
+export { editRole, getRoleById, getAllRoles, getRolesByOrgId, editRoleOrgLinkInfo } from './roleManage'
+export {getMenuListByParentId,editMenuInfo,menuLinkRole,getRoleByMenuId}   from './menu'

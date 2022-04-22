@@ -1,6 +1,6 @@
 <template>
   <div>
-      账号管理
+      访客管理
   </div>
 </template>
 

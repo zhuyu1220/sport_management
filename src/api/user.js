@@ -5,11 +5,9 @@ export const login = (data) => {
 } 
 
 export const getUserInfo = (data) => {
-
    return request({method:'get',url:"/getUserInfo",data})
 }
 
 export const logout = () => {
-
    return request({method:'get',url:"/logout"})
 }

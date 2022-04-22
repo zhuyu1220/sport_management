@@ -11,75 +11,94 @@ const routes = [
     component: () => import("@/views/login/index"),
   },
   {
+      path: '*',
+      redirect: '/404'
+  },
+  {
     path: "/",
     redirect: "/home",
-    component: () => import("@/views/layout/index.vue"),
+    component: () => import("@/layout/index.vue"),
     children: [
       {
         path: "home",
         name: "Home",
-        component: () => import("@/views/home/index"),
+        component: () => import("@/views/home"),
       },
       {
         path: "trackSystem",
-        name: "TrackSystem",
+        name: "trackSystem",
         component: () => import("@/views/home/trackSystem"),
       },
       {
         path: "timingSystem",
-        name: "TimingSystem",
+        name: "timingSystem",
         component: () => import("@/views/home/timingSystem"),
       },
       {
-        path: "accountMangae",
-        name: "accountMangae",
-        component: () => import("@/views/system/authorization/accountMangae"),
+        path: "aiTestSystem",
+        name: "aiTestSystem",
+        component: () => import("@/views/home/aiTestSystem"),
       },
-      {
-        path: "menuManage",
-        name: "menuManage",
-        component: () => import("@/views/system/authorization/menuManage"),
-      },
-      {
-        path: "organizationManage",
-        name: "organizationManage",
-        component: () => import("@/views/system/authorization/organizationManage"),
-      },
-      {
-        path: "roleManage",
-        name: "roleManage",
-        component: () => import("@/views/system/authorization/roleManage"),
-      },
-      {
-        path: "studentManage",
-        name: "studentManage",
-        component: () => import("@/views/system/userManage/studentManage"),
-      },
-      {
-        path: "teacherManage",
-        name: "teacherManage",
-        component: () => import("@/views/system/userManage/teacherManage"),
-      },
-      {
-        path: "visitorManage",
-        name: "visitorManage",
-        component: () => import("@/views/system/userManage/visitorManage"),
-      },
+
     ],
   },
+  
 ];
 
-const router = new VueRouter({
-  routes,
-});
-
-router.beforeEach((to, from, next) => {
-  //  页面刷新或者跳转的时候,获取用户信息
-  if (store.state.user.token) {
-    store.dispatch("getUserInfo");
-  } else {
+const asyncRoutes = [
+   {
+    path: '/',
+    component: () => import("@/layout/index.vue"),
+    children:[
+    {
+      path: "/system/authorization/accountMangae",
+      name: "accountMangae",
+      component: () => import("@/views/system/authorization/accountMangae"),
+      meta: {title:"账号管理"}
+    },
+    {
+      path: "/system/authorization/menuManage",
+      name: "menuManage",
+      component: () => import("@/views/system/authorization/menuManage"),
+      meta: {title:"菜单管理"}
+    },
+    {
+      path: "/system/authorization/organizationManage",
+      name: "organizationManage",
+      component: () => import("@/views/system/authorization/organizationManage"),
+      meta: {title:"组织管理"}
+    },
+    {
+      path: "/system/authorization/roleManage",
+      name: "roleManage",
+      component: () => import("@/views/system/authorization/roleManage"),
+      meta: {title:"角色管理"}
+    },
+      {
+        path: "/system/userManage/studentManage",
+        name: "studentManage",
+        component: () => import("@/views/system/userManage/studentManage"),
+        meta: {title:"学生管理"}
+      },
+      {
+        path: "/system/userManage/teacherManage",
+        name: "teacherManage",
+        component: () => import("@/views/system/userManage/teacherManage"),
+        meta: {title:"教师管理"}
+      },
+      {
+        path: "/system/userManage/visitorManage",
+        name: "visitorManage",
+        component: () => import("@/views/system/userManage/visitorManage"),
+        meta: {title:"访客管理"}
+      },
+    ]
   }
+]
 
-  next();
+const router = new VueRouter({
+  routes:[...routes,...asyncRoutes]
 });
+
+
 export default router;

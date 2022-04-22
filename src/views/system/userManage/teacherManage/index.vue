@@ -1,6 +1,6 @@
 <template>
   <div>
-      账号管理
+      教师管理
   </div>
 </template>
 

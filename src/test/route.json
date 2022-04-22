@@ -1,0 +1,272 @@
+[{
+     "path":"/home",
+     "name":"home",
+     "icon":"el-icon",
+     "url":"/home",
+     "title":"首页"
+   
+},{
+    "title":"系统管理",
+    "icon":"el-icon",
+    "path":"",
+    "name":"",
+    "url":"",
+    "children":[
+        {
+            "title":"平台授权",
+            "icon":"",
+            "path":"",
+            "name":"",
+            "url":"",
+            "children":[{
+                "title":"组织管理",
+                "icon":"",
+                "path":"/system/authorization/organizationManage",
+                "name":"organizationManage",
+                "url":"/system/authorization/organizationManage"
+            },{
+                "title":"角色管理",
+                "icon":"",
+                "path":"/system/authorization/organizationManage",
+                "name":"organizationManage",
+                "url":"/system/authorization/organizationManage"
+            },{
+                "title":"账号管理",
+                "icon":"",
+                "path":"/system/authorization/organizationManage",
+                "name":"organizationManage",
+                "url":"/system/authorization/organizationManage"
+            },{
+                "title":"菜单管理",
+                "icon":"",
+                "path":"/system/authorization/menuManage",
+                "name":"menuManage",
+                "url":"/system/authorization/menuManage"
+            }
+            ]
+        },
+        {
+            "title":"用户管理",
+            "icon":"el-icon",
+            "path":"",
+            "name":"",
+            "url":"",
+            "children":[{
+                "title":"学生管理",
+                "icon":"",
+                "path":"/system/userManage/studentManage",
+                "name":"studentManage",
+                "url":"/system/userManage/studentManage"
+            },{
+                "title":"教师管理",
+                "icon":"",
+                "path":"/system/userManage/teacherManage",
+                "name":"teacherManage",
+                "url":"system/userManage/teacherManage"
+            },{
+                "title":"访客管理",
+                "icon":"",
+                "path":"/system/userManage/vistorManage",
+                "name":"vistorManage",
+                "url":"/system/userManage/vistorManage"
+            }
+            ]
+        },   {
+            "title":"基础维护",
+            "icon":"el-icon",
+            "path":"",
+            "name":"",
+            "url":"",
+            "children":[{
+                "title":"等级管理",
+                "icon":"",
+                "path":"/system/baseMantain/gradeManage",
+                "name":"studentManage",
+                "url":"/system/baseMantain/gradeManage"
+            },{
+                "title":"积分规则",
+                "icon":"",
+                "path":"/system/pointRule/pointRule",
+                "name":"pointRule",
+                "url":"system/pointRule/pointRule"
+            }
+            ]
+        }
+    ]
+   
+},{
+    "path":"",
+    "name":"",
+    "icon":"el-icon",
+    "url":"",
+    "title":"校园天地",
+    "children":[
+        {
+            "title":"校园信息",
+            "icon":"",
+            "path":"",
+            "name":"",
+            "url":"",
+            "children":[{
+                "title":"信息发布",
+                "icon":"",
+                "path":"/school/campus/publish",
+                "name":"campusPublish",
+                "url":"/school/campus/publish"
+            },{
+                "title":"信息审核",
+                "icon":"",
+                "path":"/school/campus/check",
+                "name":"organizationManage",
+                "url":"/school/campus/check"
+            }
+            ]
+        },      {
+            "title":"大屏公告",
+            "icon":"",
+            "path":"",
+            "name":"",
+            "url":"",
+            "children":[{
+                "title":"信息发布",
+                "icon":"",
+                "path":"/school/largeScreen/publish",
+                "name":"largeScreenPublish",
+                "url":"/school/largeScreen/publish"
+            },{
+                "title":"信息审核",
+                "icon":"",
+                "path":"/school/largeScreen/check",
+                "name":"largeScreenCheck",
+                "url":"/school/largeScreen/check"
+            }
+            ]
+        }
+    
+    ]
+  
+},{
+    "title":"跑步计时",
+    "icon":"el-icon",
+    "path":"",
+    "name":"",
+    "url":"",
+    "children":[
+      {
+        "title":"手环登记",
+        "icon":"el-icon",
+        "path":"/race/wristband",
+        "name":"wristband",
+        "url":"/race/wristband"
+       } , {
+        "title":"发令账号",
+        "icon":"el-icon",
+        "path":"/race/order",
+        "name":"order",
+        "url":"/race/order"
+       } , {
+        "title":"跑步项目",
+        "icon":"el-icon",
+        "path":"/race/project",
+        "name":"",
+        "url":"/race/project"
+       } , {
+        "title":"日常跑步训练",
+        "icon":"el-icon",
+        "path":"/race/dailyRun",
+        "name":"",
+        "url":"/race/dailyRun"
+       } , {
+        "title":"赛事发布",
+        "icon":"el-icon",
+        "path":"/race/gamePublish",
+        "name":"",
+        "url":"/race/gamePublish"
+       } , {
+        "title":"赛事审核",
+        "icon":"el-icon",
+        "path":"/race/gameCheck",
+        "name":"",
+        "url":"/race/gameCheck"
+       } ,{
+        "title":"赛事报名",
+        "icon":"el-icon",
+        "path":"/race/gameEnroll",
+        "name":"",
+        "url":"/race/gameEnroll" 
+       }
+    ]
+},{
+    "title":"数据统计",
+    "icon":"el-icon",
+    "path":"",
+    "name":"",
+    "url":"",
+    "children":[
+      {
+        "title":"校园智道统计",
+        "icon":"el-icon",
+        "path":"/data/roadCount",
+        "name":"wristband",
+        "url":"/data/roadCount"
+       } , {
+        "title":"校园智道分析",
+        "icon":"el-icon",
+        "path":"/data/roadAnalysis",
+        "name":"order",
+        "url":"/data/roadAnalysis"
+       } , {
+        "title":"AI体侧统计",
+        "icon":"el-icon",
+        "path":"/data/aiCount",
+        "name":"",
+        "url":"/data/aiCount"
+       } , {
+        "title":"AI体侧分析",
+        "icon":"el-icon",
+        "path":"/data/aiAnalysis",
+        "name":"",
+        "url":"/data/aiAnalysis"
+       } , {
+        "title":"跑步计时统计",
+        "icon":"el-icon",
+        "path":"/data/runCount",
+        "name":"",
+        "url":"/data/runCount"
+       } , {
+        "title":"跑步计时报告",
+        "icon":"el-icon",
+        "path":"/data/runReport",
+        "name":"",
+        "url":"/data/runReport"
+       } ,{
+        "title":"出勤统计",
+        "icon":"el-icon",
+        "path":"/data/attendanceCount",
+        "name":"",
+        "url":"/data/attendanceCount" 
+       }
+    ]
+},{
+    "title":"积分商城",
+    "icon":"el-icon",
+    "path":"",
+    "name":"",
+    "url":"",
+    "children":[
+      {
+        "title":"商城维护",
+        "icon":"el-icon",
+        "path":"/mall/exchangeRecord",
+        "name":"wristband",
+        "url":"/mall/exchangeRecord"
+       } , {
+        "title":"兑换记录",
+        "icon":"el-icon",
+        "path":"/mall/matiain",
+        "name":"order",
+        "url":"/mall/matiain"
+       } 
+    ]
+}
+]

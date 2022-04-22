@@ -1,163 +1,164 @@
 <template>
   <div>
-    <el-table :data="tableData" border style="width: 100%">
-      <el-table-column prop="id" label="序号" width="50px"> </el-table-column>
-      <el-table-column prop="deviceName" label="多功能健康柱I型" width="300px">
-      </el-table-column>
-      <el-table-column prop="status" label="正常" width="300px">
-      </el-table-column>
-    </el-table>
-    <div class="chart">
-      <div ref="secChart" class="item"></div>
-      <div ref="firstChart" class="item"></div>
-      <div class="item">
-        <p>个人活跃排行</p>
-         <el-table height="200px" :data="rankOfAcitve" border style="width: 100%">
-           <el-table-column prop="id" label="排名" width="100%"> </el-table-column>
-          <el-table-column prop="name" label="姓名">
+    <!-- 设备详情begin -->
+     <div>
+         <h2>设备详情</h2>
+      <el-table
+        :data="equStatus"
+        style="width: 100%">
+          <el-table-column
+          prop="no"
+          label="设备序号"
+          width="width"/>
+        <el-table-column
+          prop="equName"
+          label="设备名称"
+          width="width">
         </el-table-column>
-         <el-table-column prop="score" label="成绩" >
-         </el-table-column>
-          </el-table>
-      </div>
+         <el-table-column
+          prop="status"
+          label="状态"
+          width="width">
+        </el-table-column>
+              <el-table-column
+          prop="equDes"
+          label="备注"
+          width="width">
+        </el-table-column>
+      </el-table>
+
+     </div>  
+    <!-- 设备详情end -->
+    <!--个人活跃top5 begin -->
+    <div>
+        <h2>个人活跃top5</h2>
+         <el-table
+        :data="personActiveTop5Format"
+        style="width: 100%">
+        <el-table-column
+          prop="rank"
+          label="排名"
+          width="width"/>
+                <el-table-column
+          prop="name"
+          label="姓名"
+          width="width"/>
+                <el-table-column
+          prop="class"
+          label="班级"
+          width="width"/>
+            <el-table-column
+          prop="activeTime"
+          label="活跃时间"
+          width="width"/>
+             
+      </el-table>
+
     </div>
+    <!--个人活跃top5 end -->
+    <!-- 大屏七日使用人次折线图begin -->
+    <div style="width:300px;height:400px" ref="bigScreenUsedtimesChart">
+            
+    </div>
+      <!-- 大屏七日使用人次折线图end -->
   </div>
 </template>
 
 <script>
+import {getEquStatus,getTableVal,getChartVal} from '@/api/index.js'
 export default {
-  data() {
-    return {
-      tableData: [
-        {
-          id: "01",
-          deviceName: "多功能健康柱I型",
-          status: "正常",
-        },
-        {
-          id: "02",
-          deviceName: "多功能气象站",
-          status: "正常",
-        },
-      ],
-      chartData: [
-        {
-          id: 1,
-          name: "大屏使用人次",
-          data: [
-            { id: "001", key: "2/20", value: "50" },
-            { id: "001", key: "2/21", value: "50" },
-            { id: "001", key: "2/22", value: "50" },
-            { id: "001", key: "2/23", value: "60" },
-            { id: "001", key: "2/24", value: "70" },
-            { id: "001", key: "2/25", value: "80" },
-          ],
-        },
-        {
-          id: 2,
-          name: "个人活跃日排行top50",
-          data: [
-            { id: "001", key: "一班", value: "50" },
-            { id: "001", key: "二班", value: "50" },
-            { id: "001", key: "三班", value: "50" },
-            { id: "001", key: "四班", value: "50" },
-          ],
-        },
-      ],
-      rankOfAcitve: [
-        { id: 1, name: "zhangsan", score: "1111" },
-        { id: 1, name: "zhangsan", score: "1111" },
-        { id: 1, name: "zhangsan", score: "1111" },
-        { id: 1, name: "zhangsan", score: "1111" },
-        { id: 1, name: "zhangsan", score: "1111" },
-        { id: 1, name: "zhangsan", score: "1111" },
-        { id: 1, name: "zhangsan", score: "1111" },
-        { id: 1, name: "zhangsan", score: "1111" },
-        { id: 1, name: "zhangsan", score: "1111" },
-        { id: 1, name: "zhangsan", score: "1111" },
-
-        { id: 1, name: "zhangsan", score: "1111" },
-      ],
-    };
+  data(){
+    return{
+      equStatus:[],
+      personActiveTop5:[],
+      bigScreenUsedyimes:[]
+    }
   },
-  methods: {
-    // transformFontSize(fontsize) {
-    //     // 获取屏幕宽度
-    //   const width = window.screen.width
-    //   const ratio = width / 1920
-    //   // 取下整
-    //   return parseInt(fontsize * ratio)
-    // },
-    drawAllCharts() {
-      const Chart = this.$echarts.init(this.$refs.firstChart);
-      let xAxisData = [];
-      let yAxisData = [];
-      this.chartData[0].data.forEach((item) => {
-        xAxisData.push(item.key);
-      });
-
-      this.chartData[0].data.forEach((item) => {
-        yAxisData.push(item.value);
-      });
-
-      let options = {
+  computed:{
+    /*
+      [["排名","姓名","班级","活跃时长"],["1","张三","六(1)","1h"]]
+      [{rank:"1",name:'zhangsan',class:'一年级一班',activeTime:'1h'},]
+    
+    */
+    personActiveTop5Format(){
+      // let initalData  = JSON.parse(JSON.stringify(this.personActiveTop5))
+      // console.log(initalData,123);
+      this.personActiveTop5.shift();
+      let temp = []
+      this.personActiveTop5.forEach((item)=>{
+         temp.push({'rank':item[0],'name':item[1],'class':item[2],'activeTime':item[3]})
+      })
+    
+       
+      return temp
+    }
+  },
+  methods:{
+    async reqGetEquStatus(){
+        const res = await  getEquStatus({val:'1'})
+        if(res.data.code == 100){
+          this.equStatus = res.data.data
+        }
+    },
+    // 查看校园智道_个人活跃top5
+     async reqGetTableVal(){
+        const res = await  getTableVal({"val":"1.10"})
+        if(res.data.code == 100){
+          this.personActiveTop5 = res.data.data
+        }
+    },
+    //  查看校园智道_大屏七日使用人次
+    async reqGetChartVal(){
+        const res = await  getChartVal({"val":"1.20"})
+        if(res.data.code == 100){
+          this.bigScreenUsedyimes = res.data.data
+        }
+    },
+    drawBigScreenUsedtimesChart(){
+        const Chart = this.$echarts.init(this.$refs.bigScreenUsedtimesChart);
+        let options = {
         title: {
-          text: "大屏使用日人次(近七日)",
-          textStyle: {
-            fontsize: "22px",
-            fontWeight: "normal",
+           text: "大屏使用日人次(近七日)",
+           textStyle: {
+           fontsize: "22px",
+           fontWeight: "normal",
           },
           top: 10,
         },
         tooltip: {},
-        legend: {
-          data: yAxisData,
-        },
         xAxis: {
-          data: xAxisData,
+          data: [1,2,3,4],
         },
         yAxis: {},
         series: [
           {
+            label:{
+              // show:true,
+            },
             type: "line",
-            data: yAxisData,
+            name:'大屏1',
+            data: ['1','5 ','6 '],
+          },
+             {
+            type: "line",
+             name:'大屏2',
+            data: ['2','5 ','8 '],
           },
         ],
       };
       Chart.setOption(options);
-      window.addEventListener("resize", () => {
-        Chart.resize();
-      });
-    },
+    } 
   },
-  mounted() {
-    this.drawAllCharts();
-  },
-  beforeDestroy() {
-    window.removeEventListener("resize", () => {
-      // this.myChart.resize();
-    });
-  },
-};
+  mounted(){
+    this.reqGetEquStatus(),
+    this.reqGetTableVal(),
+    this.reqGetChartVal(),
+    this.drawBigScreenUsedtimesChart()
+  }
+
+}
 </script>
 
-<style scoped lang="scss">
-.chart {
-  display: flex;
-  & .item {
-    border-radius: 5px;
-    background: white;
-    margin: 20px 20px 20px 0;
-    width: 500px;
-    height: 500px;
-    h3{
-      font-weight: normal;
-      font-size: 22Px;
-    }
-  }
-  .rank {
-  }
-  .times {
-  }
-}
+<style>
+
 </style>

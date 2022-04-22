@@ -11,7 +11,7 @@
         <el-form
           :model="loginForm"
           status-icon
-          :rules="rules"
+      
           ref="ruleForm"
           label-width="0"
           class="demo-ruleForm"
@@ -69,8 +69,13 @@ export default {
       try {
         const { userName, password } = this.loginForm;
         if (userName && password) {
-          this.$store.dispatch("userLogin", { userName, password });
-          this.$router.push("/home");
+          this.$store.dispatch("user/userLogin", { userName, password }).then((data)=>{
+           this.$router.push("/home").catch(error=>{
+                  console.log(error,1111);     
+               });
+          })
+   
+       
         }
       } catch (error) {
         console.log(error);
