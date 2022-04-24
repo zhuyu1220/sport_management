@@ -1,5 +1,5 @@
 <template>
-  <div>开发中...敬请等候</div>
+  <div>ai统计 开发中...敬请等候</div>
 </template>
 
 <script>

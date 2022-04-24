@@ -391,18 +391,18 @@ export default {
       this.staticEditForm.title = "添加角色";
       this.editForm = {
         name: "",
-        id: "",
+        id: 1,
         ope: 1,
         state: 1,
       };
       this.editFormDialogVisible = true;
     },
     //修改角色 初始化信息
-    alertEditRole() {
+    alertEditRole(item) {
       this.staticEditForm.title = "修改角色";
       this.editForm = {
         name: "",
-        id: "",
+        id:item.id,
         ope: 2,
         state: 1,
       };

@@ -5,18 +5,26 @@ console.log(resolve);
 // const IS_PROD = ["production", "prod"].includes(process.env.NODE_ENV);
 module.exports = {
     lintOnSave: false,
-  
     devServer: {
         hot: true,//热更新
         proxy:{
-            '/api': {
-                target: ' http://192.168.0.120:9898',//代理地址，这里设置的地址会代替axios中设置的baseURL
+            '/dev-server': {
+                target:'http://192.168.0.117:8080/edu-control',//代理地址，这里设置的地址会代替axios中设置的baseURL
                 changeOrigin: true,
                 pathRewrite: {
-                    '^/api': '/' 
+                    '^/dev-server': '' 
+                },
                 
-               }
-        }}
+            },
+            '/prod-server': {
+                target:'http://192.168.0.117:8080/edu-control',//代理地址，这里设置的地址会代替axios中设置的baseURL
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/prod-server': '' 
+                },
+            }
+        
+        }
     },
     chainWebpack: config => {
         // 添加别名

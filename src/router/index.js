@@ -49,7 +49,8 @@ const asyncRoutes = [
    {
     path: '/',
     component: () => import("@/layout/index.vue"),
-    children:[
+    children: [
+      // 系统管理开始
     {
       path: "/system/authorization/accountMangae",
       name: "accountMangae",
@@ -92,6 +93,39 @@ const asyncRoutes = [
         component: () => import("@/views/system/userManage/visitorManage"),
         meta: {title:"访客管理"}
       },
+      // 系统管理结束
+      // 数据统计开始
+      {
+        "path":"/data/roadCount",
+        "name":"wristband",
+         component: () => import("@/views/data/roadCount"),
+       } , {
+        "path":"/data/roadAnalysis",
+        "name":"order",
+        component: () => import("@/views/data/roadAnalysis"),
+       } , {
+        "path":"/data/aiCount",
+        "name": "",
+         component: () => import("@/views/data/aiCount"),
+       } , {
+        "path":"/data/aiAnalysis",
+        "name":"",
+        component: () => import("@/views/data/aiAnalysis"),
+       } , {
+         "path":"/data/runCount",
+         "name":"",
+         component: () => import("@/views/data/runCount"),
+       } , {
+  
+        "path":"/data/runReport",
+        "name":"",
+        component: () => import("@/views/data/runReport"),
+       } ,{
+        "path":"/data/attendanceCount",
+        "name":"",
+        component: () => import("@/views/data/attendanceCount")
+      }
+      // 数据统计结束
     ]
   }
 ]

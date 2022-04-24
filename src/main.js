@@ -4,7 +4,7 @@ import router from './router'
 import store from './store'
 import ElementUI from 'element-ui';
 import 'nprogress/nprogress.css'
-import './mock/mockServer.js'
+// import './mock/mockServer.js'
 import 'element-ui/lib/theme-chalk/index.css';
 import '@/permission' 
 import * as echarts from 'echarts';

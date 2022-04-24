@@ -45,7 +45,7 @@
       <div class="panel">
         <el-button
           type=""
-          @click="alertAddInfo({ lev: 1, parentId: '-1', orgName: '学校',edit:'添加' })"
+          @click="alertAddInfo({id:1, lev: 1, parentId: '-1', orgName: '学校',edit:'添加' })"
           >添加学校</el-button
         >
         <ul>
@@ -54,7 +54,7 @@
             <div>
            <el-popconfirm
               title="是否确认删除(下级组织也会被删除)?"
-              @confirm="deleteOrg(item)"
+              @confirm="deleteOrg(item.id)"
             >
               <el-button
                 type="text"
@@ -74,6 +74,7 @@
           type=""
           @click="
             alertAddInfo({
+              id:1,
               lev: 2,
               parentId: orgInfo.school[0].id,
               edit:'添加',
@@ -93,7 +94,7 @@
           <div>
           <el-popconfirm
               title="是否确认删除(下级组织也会被删除)?"
-              @confirm="deleteOrg(item)"
+              @confirm="deleteOrg(item.id)"
             >
                 <el-button
                 type="text"
@@ -112,7 +113,7 @@
         <el-button
           type=""
           @click="
-            alertAddInfo({ lev: 3, parentId: curSeletedGrade, orgName: '班级', edit:'添加'})
+            alertAddInfo({id:1, lev: 3, parentId: curSeletedGrade, orgName: '班级', edit:'添加'})
           "
           >添加班级</el-button
         >
@@ -184,13 +185,13 @@ export default {
       },
       form: {
         code: "",
-        id: "",
+        id: "1",
         lev: "",
         name: "",
         ope: "",
         parentId: "",
-        state: "",
-        year: "",
+        state: "1",
+        year: "2002",
       },
       formRules: {
         code: [{ required: true, message: "请输入组织编码", trigger: "blur" }],
@@ -224,11 +225,13 @@ export default {
         lev,
         id,
         ope: "2",
-        code:''
+        code:'',
+        state:'1',
+        year: "2022",
       };
       this.dialogFormVisible = !this.dialogFormVisible;
     },
-    alertAddInfo({ lev, parentId, orgName,edit }) {
+    alertAddInfo({id, lev, parentId, orgName,edit }) {
       if (parentId != null) {
        this.staticForm = {
          orgName,
@@ -238,9 +241,11 @@ export default {
         name: "",
         parentId,
         lev: lev,
-        id: "",
+        id,
         ope: "1",
-        code:''
+        code:'',
+        state:'1',
+        year:""
       };
         this.dialogFormVisible = !this.dialogFormVisible;
       } else {
@@ -271,25 +276,30 @@ export default {
       });
     },
 
-    async deleteOrg(orgInfo) {
-      const res = await editOrg(editOrg);
+    async deleteOrg(id) {
+      console.log(id,'454545');
+      
+      const res = await editOrg({
+        id,
+        ope:'0'
+      });
       if (res.data.code == 100) {
         this.$message({
           message: "删除成功",
           type: "success",
         });
-        if (orgInfo.lev == -1) {
-          this.reqGetOrgByParentId(orgInfo.parentId);
-        } else if (orgInfo.lev == 1) {
-          this.reqGetGradeOrg(orgInfo.parentId);
-        } else {
-          this.reqGetClassOrg(orgInfo.parentId);
-        }
+        // if (id.lev == -1) {
+        //   this.reqGetOrgByParentId(orgInfo.parentId);
+        // } else if (orgInfo.lev == 1) {
+        //   this.reqGetGradeOrg(orgInfo.parentId);
+        // } else {
+        //   this.reqGetClassOrg(orgInfo.parentId);
+        // }
       }
     },
     // 查询学校信息
     async reqGetOrgByParentId() {
-      const res = await getOrgByParentId({ val: "-1" });
+      const res = await getOrgByParentId({ parentId: "-1" });
       if (res.data.code == 100) {
         this.orgInfo.school = res.data.data;
         return Promise.resolve(res.data.data);
@@ -300,7 +310,7 @@ export default {
     },
     // 查询年级信息
     async reqGetGradeOrg(parentId) {
-      const res = await getOrgByParentId({ val: parentId });
+      const res = await getOrgByParentId({ parentId: parentId });
       if (res.data.code == 100) {
         this.orgInfo.grade = res.data.data;
         return Promise.resolve(res.data.data);
@@ -313,7 +323,7 @@ export default {
       this.currentIndex =index
       this.curSeletedGrade = parentId;
       if (this.curSeletedGrade) {
-        const res = await getOrgByParentId({ val: parentId });
+        const res = await getOrgByParentId({ parentId: parentId });
         if (res.data.code == 100) {
           this.orgInfo.class = res.data.data;
           return Promise.resolve(res.data.data);

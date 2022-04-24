@@ -79,13 +79,13 @@
               <!-- <i class="el-icon-location"></i> -->
               <span slot="title">数据统计</span>
             </template>
-            <el-menu-item index="4">校园智道统计</el-menu-item>
-            <el-menu-item index="4">校园智道分析</el-menu-item>
-            <el-menu-item index="4">AI体侧统计</el-menu-item>
-            <el-menu-item index="4">AI体侧分析</el-menu-item>
-            <el-menu-item index="4">跑步计时统计</el-menu-item>
-            <el-menu-item index="4">跑步计时报告</el-menu-item>
-            <el-menu-item index="4">出勤统计</el-menu-item>
+            <el-menu-item index="/data/roadCount">校园智道统计</el-menu-item>
+            <el-menu-item index="/data/roadAnalysis">校园智道分析</el-menu-item>
+            <el-menu-item index="/data/aiCount">AI体侧统计</el-menu-item>
+            <el-menu-item index="/data/aiAnalysis">AI体侧分析</el-menu-item>
+            <el-menu-item index="/data/runCount">跑步计时统计</el-menu-item>
+            <el-menu-item index="/data/runReport">跑步计时报告</el-menu-item>
+            <el-menu-item index="/data/attendanceCount">出勤统计</el-menu-item>
           </el-submenu>
           <el-submenu index="5"  v-show="curIdx == 5">
             <template slot="title">
@@ -316,7 +316,7 @@ export default {
     background: white;
     position: absolute;
     top: 50%;
-    left: 80px;
+    left: 57px;
   }
   .el-menu-demo>.el-menu-item:nth-of-type(1){
        border-bottom: none;

@@ -3,8 +3,11 @@ import nProgress from 'nprogress';
 import {Message} from 'element-ui'
 import store from '../store';
 let request = axios.create({
+  
     // 为所有的请求路径基础上添加一个/api 为后续的代理配置跨域做准备
-    // baseURL: '/mock',
+   
+    // baseURL: 'http://192.168.0.117:8080',
+    baseURL: process.env.VUE_APP_BASE_API,
     timeout:3000
 })
 
@@ -24,7 +27,13 @@ request.interceptors.request.use((config) => {
 // 对服务器传回来的数据做处理  第一个回调参数是成功回调,第二个参数则是失败回调
 request.interceptors.response.use((response) => {
   nProgress.done()
-
+  console.log(response, 4566666)
+  if (response.data.code != 100) {
+    Message({
+      type: 'error',
+      message:response.data.msg
+    })
+  } 
   return response;
    
   

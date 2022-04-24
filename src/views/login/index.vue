@@ -20,7 +20,7 @@
             <el-input
               type="text"
               placeholder="输入用户名"
-              v-model="loginForm.userName"
+              v-model="loginForm.username"
               autocomplete="off"
             ><i slot='prefix'> <img src="@/assets/yonghu.png"></i></el-input>
           </el-form-item>
@@ -32,7 +32,7 @@
               autocomplete="off"
             ><i slot='prefix'> <img src="@/assets/mima.png"></i></el-input>
           </el-form-item>
-           <el-form-item label="" prop="checkPass">
+           <!-- <el-form-item label="" prop="checkPass">
             <el-input
                placeholder="输入验证码"
               type="text"
@@ -41,7 +41,7 @@
             >
                <i slot='prefix'> <img src="@/assets/yanzheng.png"></i>
             </el-input>
-          </el-form-item>
+          </el-form-item> -->
           
           <el-form-item>
                 <el-button type="primary"  @click="login">进入系统</el-button>
@@ -55,30 +55,28 @@
 </template>
 
 <script>
+ import { login } from '@/api'
 export default {
   data() {
     return {
       loginForm: {
-        userName: "zhangsan",
-        password: "12315456",
+        username: "123456",
+        password: "123456",
+        tenant:"2",
       },
     };
   },
   methods: {
     async login() {
       try {
-        const { userName, password } = this.loginForm;
-        if (userName && password) {
-          this.$store.dispatch("user/userLogin", { userName, password }).then((data)=>{
+          this.$store.dispatch("user/userLogin", this.loginForm).then((data)=>{
            this.$router.push("/home").catch(error=>{
                   console.log(error,1111);     
                });
           })
-   
-       
-        }
       } catch (error) {
         console.log(error);
+        this.$message.error(error)
       }
     },
   },
