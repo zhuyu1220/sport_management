@@ -1,9 +1,60 @@
 <template>
   <div>
-    <!-- {{form}} -->
-    <div class="windowAddForm">
+     <el-card>
+        <el-button
+          type=""
+          @click="alertAddInfo()"
+          >添加</el-button
+        >
+        <el-button type="primary" @click="goback()">返回</el-button>
+     </el-card>
+      <el-table
+          :data="org"
+          style="width: 100%">
+          <el-table-column
+              prop="code"
+              label="组织编码"
+              width="width">
+          </el-table-column>
+            <el-table-column
+              prop="name"
+              label="名称"
+              width="width">
+          </el-table-column>
+            <el-table-column
+              prop="year"
+              label="学年"
+              width="width">
+          </el-table-column>
+          <el-table-column
+              width="width"
+              label="设置">
+              <template slot-scope="scope">
+                 <el-button v-show="scope.row.lev !=3"  type="text" @click="queryLower(scope.row.id)"> 查看下级</el-button>
+                 
+                 <!-- <el-button v-show="scope.row.lev !=1" type="text" @click="reqGetOrgByParentId(scope.row.parentId)"> 返回上级</el-button> -->
+              </template>
+          </el-table-column>
+             <el-table-column
+              width="width">
+              <template slot-scope="scope">
+                 <el-button type="primary" size="medium"  @click="alertUpdate(scope.row)"> 编辑</el-button>
+                    <el-popconfirm
+                    title="是否确认删除(下级组织也会被删除)?"
+                    @confirm="deleteOrg(scope.row)"
+                   >
+                   <el-button
+                  type="danger"
+               size="medium"
+                slot="reference"
+              >删除</el-button>
+          </el-popconfirm>
+              </template>
+          </el-table-column>
+      </el-table>
+
       <el-dialog
-        :title="staticForm.edit + staticForm.orgName"
+        :title="staticForm.title + levName"
         :visible.sync="dialogFormVisible"
       >
         <el-form
@@ -12,7 +63,7 @@
           ref="ruleForm"
           :rules="formRules"
         >
-          <el-form-item :label="staticForm.orgName + '名称'" prop="name">
+          <el-form-item :label="levName + '名称'" prop="name">
             <el-input v-model="form.name" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="组织编码" prop="code">
@@ -21,7 +72,7 @@
           <el-form-item
             label="学年"
             prop="year"
-            v-if="staticForm.orgName != '学校'"
+            v-if="curOrgLev!= 1"
           >
             <el-date-picker
               v-model="form.year"
@@ -37,145 +88,30 @@
           <el-button type="primary" @click="submitEditForm()">确 定</el-button>
         </div>
       </el-dialog>
-    </div>
-    <div class="windowdeleteForm"></div>
-    <el-card>
-    
-     <div class="wrapper">
-      <div class="panel">
-        <el-button
-          type=""
-          @click="alertAddInfo({id:1, lev: 1, parentId: '-1', orgName: '学校',edit:'添加' })"
-          >添加学校</el-button
-        >
-        <ul>
-          <li class="active" v-for="item in orgInfo.school" :key="item.id">
-            {{ item.name }}
-            <div>
-           <el-popconfirm
-              title="是否确认删除(下级组织也会被删除)?"
-              @confirm="deleteOrg(item.id)"
-            >
-              <el-button
-                type="text"
-                icon="el-icon-remove-outline"
-                slot="reference"
-              ></el-button>
-            </el-popconfirm>
-            <el-button slot="reference" type="text" icon="el-icon-edit-outline"  @click="alertUpdate({id:item.id, lev: 1, parentId: '-1', orgName: '学校',edit:'修改' })"></el-button>
-            </div>
-           
-            <!-- <el-button type="primary" @click="reqGetGradeOrg(item.id)">查询年级</el-button> -->
-          </li>
-        </ul>
-      </div>
-      <div class="panel">
-        <el-button
-          type=""
-          @click="
-            alertAddInfo({
-              id:1,
-              lev: 2,
-              parentId: orgInfo.school[0].id,
-              edit:'添加',
-              orgName: '年级',
-            })
-          "
-          >添加年级</el-button
-        >
-        <ul> 
-          <li :class=" currentIndex == index ? 'active' :'' " v-for="(item,index) in orgInfo.grade"
-           :key="item.id" >
-           <span>
-                 {{ item.name }}
-           </span>
-         
-            <!-- 删除需要传递当前组织id 父亲id  -->
-          <div>
-          <el-popconfirm
-              title="是否确认删除(下级组织也会被删除)?"
-              @confirm="deleteOrg(item.id)"
-            >
-                <el-button
-                type="text"
-                icon="el-icon-remove-outline"
-                slot="reference"
-              ></el-button>
-          </el-popconfirm>
-         <el-button slot="reference" type="text" icon="el-icon-edit-outline" @click="alertUpdate({ lev: 2,od:item.id, edit:'修改', orgName: '年级'})"></el-button>
-         <el-button type="text" icon="el-icon-zoom-in" @click="reqGetClassOrg(item.id,index)"></el-button>
-          </div>
-          
-          </li>
-        </ul>
-      </div>
-      <div class="panel">
-        <el-button
-          type=""
-          @click="
-            alertAddInfo({id:1, lev: 3, parentId: curSeletedGrade, orgName: '班级', edit:'添加'})
-          "
-          >添加班级</el-button
-        >
-        <ul>
-          <li v-for="item in orgInfo.class" :key="item.id" :data-org="item">
-            {{ item.name }}
-            <div>
-              <el-button
-                type="text"
-                icon="el-icon-remove-outline"
-                slot="reference"
-              ></el-button>
-    
-                <el-button slot="reference" type="text" icon="el-icon-edit-outline" @click="alertUpdate({ lev: 2,od:item.id, edit:'修改', orgName: '班级'})"></el-button>
-              </div> 
-          </li>
-        </ul>
-      </div>
-      <!-- <div class="studentTable">
-            <el-table
-              :data="student.items"
-              style="width: 100%">
-              <el-table-column
-                prop="className"
-                label="班级"
-                width="width">
-              </el-table-column>
-                 <el-table-column
-                prop="className"
-                label="班级"
-                width="width">
-              </el-table-column>
-                 <el-table-column
-                prop="name"
-                label="姓名"
-                width="width">
-              </el-table-column>
-                 <el-table-column
-                prop="no"
-                label="学号"
-                width="width">
-              </el-table-column>
-            </el-table>
-      </div> -->
-    </div>
-    </el-card>
+  
   </div>
 </template>
 
 <script>
-import { editOrg, getOrgByParentId, getStudentByOrgId } from "@/api/index.js";
+import { editOrg, getOrgByParentId} from "@/api/index.js";
 export default {
-  data() {
-    return {
-      dialogFormVisible: false,
-      currentIndex :0,
-      curSchool: null,
-      curSeletedGrade: null,
-      curSeletedClass: null,
-      reqOrganizationData: {},
-      staticForm: {
-        edit:'',
+  data(){
+      return{
+      org:[],
+      dialogFormVisible:false,
+      form: {
+          code: "",
+          id: "1",
+          lev: "",
+          name: "",
+          ope: "",
+          parentId: "",
+          state: "1",
+          year: "",
+      },
+ 
+     staticForm: {
+        title:'',
         orgName: "",
         pickerOptions: {
           disabledDate(time) {
@@ -183,102 +119,86 @@ export default {
           },
         },
       },
-      form: {
-        code: "",
-        id: "1",
-        lev: "",
-        name: "",
-        ope: "",
-        parentId: "",
-        state: "1",
-        year: "2002",
-      },
       formRules: {
         code: [{ required: true, message: "请输入组织编码", trigger: "blur" }],
         name: [{ required: true, message: "请输入名称", trigger: "blur" }],
         year: [{ required: true, message: "请输入学年", trigger: "change" }],
       },
-      isShow: {
-        dialogFormVisible: "",
-      },
-      orgInfo: {
-        school: [],
-        grade: [],
-        class: [],
-      },
-      student: {
-        items: [],
-        currentPage: "",
-        pageSize: "10",
-      },
-    };
+      curOrgLev:1,
+ 
+     
+      }
   },
-  methods: {
-    alertUpdate({ lev, parentId, id , orgName, edit}) {
+
+  computed:{
+    levName(){
+      let val = this.curOrgLev;
+        if(val ==1){
+            return  '学校'
+          }else if(val ==2){
+            return '年级'
+          }else if(val ==3) {
+              return '班级'
+          }else{
+            return ''
+          }
+        
+    }
+  },
+  methods:{
+    alertUpdate(item) {
       this.staticForm = {
-         orgName,
-         edit
+          title:'修改'
        };
       this.form = {
-        name: "",
-        parentId,
-        lev,
-        id,
+        name: item.name,
+        parentId:item.parentId,
+        lev:item.lev,
+        id:item.id,
         ope: "2",
-        code:'',
+        code:item.code,
         state:'1',
-        year: "2022",
+        year: "",
       };
       this.dialogFormVisible = !this.dialogFormVisible;
     },
-    alertAddInfo({id, lev, parentId, orgName,edit }) {
-      if (parentId != null) {
+    alertAddInfo() {
        this.staticForm = {
-         orgName,
-         edit
+         title:"添加"
        };
       this.form = {
         name: "",
-        parentId,
-        lev: lev,
-        id,
+        parentId:this.parentId,
+        lev: this.curOrgLev,
+        id:'111',
         ope: "1",
         code:'',
         state:'1',
         year:""
       };
         this.dialogFormVisible = !this.dialogFormVisible;
-      } else {
-        this.$message({
-          type: "error",
-          message: "请选中上级组织",
-        });
-      }
+     
     },
     // 上传添加 修改表单
     submitEditForm() {
       this.$refs.ruleForm.validate(async (valid) => {
         if (valid) {
+         try{
           const res = await editOrg(this.form);
-          if (res.data.code == 100) {
-            if (this.form.lev == 1) {
-              this.reqGetOrgByParentId();
-            } else if (this.form.lev == 2) {
-              this.reqGetGradeOrg(this.curSchool);
-            } else if (this.form.lev == 3) {
-              this.reqGetClassOrg(this.curSeletedGrade);
-            }
-            this.dialogFormVisible = false;
+          if(res.data.code ==100){
+           this.reqGetOrgByParentId(this.parentId);
+           this.dialogFormVisible = false;
           }
-        } else {
-          return false;
+         }catch(error){
+           console.log(error);
+           
+         }
         }
+      
       });
     },
 
-    async deleteOrg(id) {
-      console.log(id,'454545');
-      
+    async deleteOrg({id,parentId}) {
       const res = await editOrg({
         id,
         ope:'0'
@@ -288,121 +208,34 @@ export default {
           message: "删除成功",
           type: "success",
         });
-        // if (id.lev == -1) {
-        //   this.reqGetOrgByParentId(orgInfo.parentId);
-        // } else if (orgInfo.lev == 1) {
-        //   this.reqGetGradeOrg(orgInfo.parentId);
-        // } else {
-        //   this.reqGetClassOrg(orgInfo.parentId);
-        // }
-      }
-    },
-    // 查询学校信息
-    async reqGetOrgByParentId() {
-      const res = await getOrgByParentId({ parentId: "-1" });
-      if (res.data.code == 100) {
-        this.orgInfo.school = res.data.data;
-        return Promise.resolve(res.data.data);
-        // this.reqGetGradeOrg(res.data.data[0].id)
-      } else {
-        return Promise.error("未获取到信息");
-      }
-    },
-    // 查询年级信息
-    async reqGetGradeOrg(parentId) {
-      const res = await getOrgByParentId({ parentId: parentId });
-      if (res.data.code == 100) {
-        this.orgInfo.grade = res.data.data;
-        return Promise.resolve(res.data.data);
-      } else {
-        return Promise.error("未获取到信息");
-      }
-    },
-    // 查询班级信息
-    async reqGetClassOrg(parentId,index) {
-      this.currentIndex =index
-      this.curSeletedGrade = parentId;
-      if (this.curSeletedGrade) {
-        const res = await getOrgByParentId({ parentId: parentId });
-        if (res.data.code == 100) {
-          this.orgInfo.class = res.data.data;
-          return Promise.resolve(res.data.data);
-        } else {
-          return Promise.error("未获取到信息");
-        }
-      } else {
-        this.$message({
-          type: "error",
-          message: "请先选择需要查询的年级",
-        });
-      }
-    },
-    // 查询班级学生信息
-    // async reqGetStudentByOrgId(orgId){
-    //   this.curSeletedClass  = orgId;
-    //   if(this.curSeletedClass){
-    //       let temp = {
-    //         currentPage:this.student.currentPage,
-    //         pageSize:this.student.pageSize,
-    //         val:orgId
-    //      }
-    //      const res  = await   getStudentByOrgId(temp);
-    //      if(res.data.code == 100){
-    //        console.log(res.data,44543654365);
-    //        this.student.items = res.data.data;
-    //     }
-    //   }else{
-    //     this.$message({
-    //        type:'error',
-    //        message:"请先选择需要查询的班级"
-    //     })
-    //   }
 
-    // },
+          this.reqGetOrgByParentId(parentId);
+     
+      }
+    },
+    async reqGetOrgByParentId(parentId) {
+      this.parentId = parentId;
+      const res = await getOrgByParentId({ parentId });
+       this.org = res.data.data;
+    },
+    queryLower(id){
+      if(this.curOrgLev<4){
+          this.curOrgLev +=1;
+          console.log('curOrgLev', this.curOrgLev );
+      }
+       this.reqGetOrgByParentId(id) 
+    },
+    goback(){
+      this.curOrgLev =1;
+      this.reqGetOrgByParentId(-1)
+    }
   },
-  mounted() {
-    // 进来先查询 学校
-    // 查完学校 根据学校的id 再查询 年级
-    this.reqGetOrgByParentId().then((res) => {
-      this.reqGetGradeOrg(res[0].id);
-    });
-  },
-};
+  mounted(){
+       this.reqGetOrgByParentId(-1)
+  }
+}
 </script>
 
-<style scoped lang="scss">
-.wrapper {
-  display: flex;
-}
-.panel {
-  margin-right: 50px;
-  flex: 1;
-   &::v-deep .el-icon-edit-outline,  &::v-deep .el-icon-remove-outline,  &::v-deep .el-icon-zoom-in{
-     font-size: 24px;
-   }
+<style>
 
-   ul{
-      list-style: none;  
-      margin: 20px 0 0 0 ;
-      padding: 0;
-   }
-   ul>li{
-     display: flex;
-     align-items: center;
-     justify-content: space-between;
-     border: 1px solid #DCDFE6;
-     border-top: 0;
-     padding: 0 15px;
-   }
-   ul li:nth-of-type(1) {
-    border-top: 1px solid #DCDFE6;
-   }
-    ul .active{
-      color: #409EFF;
-   
-  
-    //  outline:1px solid  #67C23A;
-    }
-   
-}
 </style>

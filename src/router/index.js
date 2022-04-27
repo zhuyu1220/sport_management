@@ -91,9 +91,100 @@ const asyncRoutes = [
         path: "/system/userManage/visitorManage",
         name: "visitorManage",
         component: () => import("@/views/system/userManage/visitorManage"),
-        meta: {title:"访客管理"}
+        meta: {title:"访客添加"}
+      },
+      {
+        path: "/system/userManage/visitorCheck",
+        
+        name: "visitorCheck",
+        component: () => import("@/views/system/userManage/visitorCheck"),
+        meta: {title:"访客审核"}
+      },
+      {
+        path: "/system/baseMantain/gradeManage",
+        name: "visitorManage",
+        component: () => import("@/views/system/baseMantain/gradeManage"),
+        meta: {title:"等级管理"}
+      },
+      {
+        path:  "/system/baseMantain/pointRule",
+        name: "visitorManage",
+        component: () => import("@/views/system/baseMantain/pointRule"),
+        meta: {title:"积分维护"}
       },
       // 系统管理结束
+      // 校园天地开始
+      {
+        path: "/school/campus/publish",
+        name: "campusPublish",
+        component: () => import("@/views/school/campus/publish"),
+        meta: {title:"校园信息发布"}
+      },
+      {
+        path: "/school/campus/check",
+        name: "campusCheck",
+        component: () => import("@/views/school/campus/check"),
+        meta: {title:"校园信息审核"}
+      },
+      {
+        path: "/school/largeScreen/publish",
+        name: "largeScreenPublish",
+        component: () => import("@/views/school/largeScreen/publish"),
+        meta: {title:"大屏信息发布"}
+      },
+      {
+        path:  "/school/largeScreen/check",
+        name: "visitorManage",
+        component: () => import("@/views/school/largeScreen/check"),
+        meta: {title:"大屏信息审核"}
+      },
+      // 校园天地结束
+      // 跑步计时开始
+      {
+        path:  "/race/wristband",
+        name: "wristband",
+        component: () => import("@/views/race/wristband"),
+        meta: {title:"手环登记"}
+      },
+      {
+        path:  "/race/order",
+        name: "order",
+        component: () => import("@/views/race/order"),
+        meta: {title:"发令账号"}
+      },
+      {
+        path:  "/race/project",
+        name: "project",
+        component: () => import("@/views/race/project"),
+        meta: {title:"跑步项目"}
+      },
+      {
+        path:  "/race/dailyRun",
+        name: "dailyRun",
+        component: () => import("@/views/race/dailyRun"),
+        meta: {title:"日常跑步训练"}
+      },
+      {
+        path:  "/race/gamePublish",
+        name: "gamePublish",
+        component: () => import("@/views/race/gamePublish"),
+        meta: {title:"赛事发布"}
+      },
+      {
+        path:  "/race/gameCheck",
+        name: "gameCheck",
+        component: () => import("@/views/race/gameCheck"),
+        meta: {title:"赛事审核"}
+      },
+      {
+        path:  "/race/gameEnroll",
+        name: "gameEnroll",
+        component: () => import("@/views/race/gameEnroll"),
+        meta: {title:"赛事报名"}
+      },
+    
+    
+      //跑步计时结束
       // 数据统计开始
       {
         "path":"/data/roadCount",

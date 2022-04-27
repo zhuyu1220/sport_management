@@ -7,7 +7,7 @@
           <el-form-item label="姓名">
         <el-input type="text" v-model="selectAccountParams.name"></el-input> 
      </el-form-item>
-      <el-form-item label="用户名">
+      <el-form-item label="账号">
         <el-input type="text" v-model="selectAccountParams.username"></el-input> 
      </el-form-item>
      <e-form-item>
@@ -16,7 +16,10 @@
     </el-form>
     </el-row>
   </el-card>
-      <el-table :data="accountTable" border style="width: 100%"  :headerCellStyle="{ background:'#C0C4CC'}"  :headerRowStyle="{color:'#000'}">
+      <el-table 
+      v-loading="loading" 
+
+      :data="accountTable" border style="width: 100%"  :headerCellStyle="{ background:'#C0C4CC'}"  :headerRowStyle="{color:'#000'}">
       <el-table-column prop="name" label="用户名" width="width">
       </el-table-column>
         <el-table-column prop="username" label="账号" width="width">
@@ -28,14 +31,14 @@
     
       <el-table-column label="操作" width="width">
            <template slot-scope="scope">
-             <el-button type="primary" @click="alertDeleteAccount(scope.row.account)">删除</el-button>
-              <el-button type="primary" @click="alertUpdateAccount(scope.row.account)">修改</el-button>
+             <el-button type="primary" @click="alertDeleteAccount(scope.row.id)">删除</el-button>
+              <el-button type="primary" @click="alertUpdateAccount(scope.row.id)">修改</el-button>
             </template>  
        </el-table-column>
     </el-table>
     <el-row type="flex" justify="end" :gutter="10">
       <el-col :span="6">
-           <el-pagination
+      <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="selectAccountParams.currentPage"
@@ -43,7 +46,7 @@
         :page-size="10"
         layout=" sizes, prev, pager, next, jumper,total"
        :total="total">
-    </el-pagination>
+        </el-pagination>  
       </el-col>
     </el-row>
   
@@ -56,8 +59,8 @@
         <el-form-item label="用户名" prop="name" >
           <el-input v-model="accountForm.name"></el-input>
         </el-form-item>
-        <el-form-item label="账号"  prop="account">
-          <el-input v-model="accountForm.account"></el-input>
+        <el-form-item label="账号"  prop="username">
+          <el-input v-model="accountForm.username"></el-input>
         </el-form-item>
           <el-form-item label="密码" prop="password" >
           <el-input v-model="accountForm.password"></el-input>
@@ -79,40 +82,37 @@
 // 角色列表中展示  是否选中 以及点击选择 就提交一个 
 
 import {
-  getRolesByOrgId,
-  getOrgByParentId,
+  getAccountByPage,
+  editAccountInfo,accountLinkRoleOrg,getAccountDetail
 } from "@/api/index.js";
 export default {
   data() {
     return {
-
+      loading:true,
       accountFormDialog:false,
       //账号表格
       accountTable: [
-        {
-          name: "钱敬冬",
-          password: "11111",
-          roleNames: ["一年级年级主任,二年级年级主任"],
-          state: "1",
-          username: "18066051201",
-        },
+  
       ],
       staticAccountForm: {
         title:'添加账号'
       },
       // 账号表单 
       accountForm: {
+        //姓名
         name: "",
-        ope: "",
+        username:'',
+        ope: 1,
         password: "",
-        state: "",
-        account: "",
+        state: 1,
+        id:''
+      
       },
       accountFormRules:{
            name:[
              {required:true,message:'请输入用户名',trigger:'blur'},
            ],
-           account:[
+           username:[
                {required:true,message:'请输入账号',trigger:'blur'},
            ],
            password:[
@@ -123,8 +123,7 @@ export default {
        selectAccountParams:{
           "currentPage":1,
           "pageSize":10,
-          "name":"",
-          "username":""
+
        },
        total:0
     
@@ -140,25 +139,24 @@ export default {
     alertAddAccount() {
       this.staticAccountForm.title= '添加账号';
       this.accountForm={
-         name: "",
-         ope: "1",
-         password: "",
-         state: "1",
-         account: "",
+        name: "",
+        username:'',
+        ope: 1,
+        password: "",
+        state: 1,
+        id:''
       }
      this.accountFormDialog=true
     
     },
-    alertUpdateAccount(id) {
-      this.staticAccountForm.title= '修改账号';
-      this.accountForm={
-         name: "",
-         ope: "2",
-         password: "",
-         state: "1",
-         account: ''
-      }
-     this.accountFormDialog=true
+    async alertUpdateAccount(id) {
+       this.staticAccountForm.title= '修改账号';
+      const res = await this.reqGetAccountDetail({id})
+     console.log(res,111111111)
+         Object.assign(this.accountForm,res.data)
+      
+      this.accountForm.ope=2
+      this.accountFormDialog=true
     
     },
   
@@ -188,30 +186,40 @@ export default {
     reqEditAccountInfo(){
       this.$refs.accountForm.validate(async (valid) => {
         if (valid) {
-         const res = await editAccountInfo(this.staticAccountForm);
+         const res = await editAccountInfo(this.accountForm);
           if (res.data.code == 100) {
-            if (this.roleForm.ope == 1) {
-              this.$message({
+            this.$message({
                 type: "success",
-                message: "添加成功",
+                message: "操作成功",
               });
-            } else {
-              this.$message({
-                type: "success",
-                message: "修改成功",
-              });
-            }
             this.accountFormDialog = false;
           }
+          this.reqGetAccountByPages()
         }
       }); 
     },
+    async reqGetAccountDetail(id){
+       try{
+         const res = await getAccountDetail(id)
+         return res.data
+       }catch(err){
+          console.log(err);
+          
+       }
+    },
     async reqGetAccountByPages() {
       const res = await getAccountByPage(this.selectAccountParams);
-      if (res.data.code == 100) {
+      try{
+        if (res.data.code == 100) {
          this.accountTable = res.data.data;
-           this.tatal = res.data.data.dataTotal
+         this.tatal = res.data.data.dataTotal
       }
+      }catch(err){
+           console.log(err);
+      }finally{
+        this.loading =false
+      }
+     
 
     },
     // 获取账号详情
@@ -224,6 +232,7 @@ export default {
 
   },
   mounted(){
+    this.reqGetAccountByPages()
     
   }
 };

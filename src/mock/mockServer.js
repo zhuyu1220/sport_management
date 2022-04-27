@@ -3,13 +3,15 @@ import Mock from 'mockjs'
 //Mock.mock(url,method,data)
 
 // 获取token 
-Mock.mock('/login', 'post', () => {
+Mock.mock('/homepage/user/login', 'post', () => {
     return {
         code: 100,
         msg:'成功',
         data: {
             token: "ajkdljakljsdklajsd245da435s4d",
-            username:"张三" 
+            userInfo: {
+                username:"王五"
+            }
         }
     }
 })
@@ -188,10 +190,11 @@ Mock.mock('/getChartVal', 'post', (data) => {
 })
 
 // 查询组织机构信息
-Mock.mock('/getOrgByParentId', 'post', (data) => {
-    let parentId = JSON.parse(data.body).val
-    // console.log(JSON.parse(data.body).val,'哈哈哈');
-    if (parentId == '-1') {
+// /\/api\/basic*?/
+Mock.mock(/\/system\/org\/queryParent*?/ , 'get', (data) => {
+     console.log(data.url,1111111111);
+     
+    if (data.url.includes('-1') ) {
         return {
             "code": "100",
             "data": [
@@ -208,7 +211,7 @@ Mock.mock('/getOrgByParentId', 'post', (data) => {
             "dataSize": "12", "msg": "通信成功"
         }
     }
-    if (parentId == '0') {
+    if (data.url.includes('0')) {
         return {
             "code": "100",
             "data": [
@@ -247,7 +250,7 @@ Mock.mock('/getOrgByParentId', 'post', (data) => {
             "dataSize": "12", "msg": "通信成功"
         }
     }
-    if (parentId == '1') {
+    if (data.url .includes('1')) {
         return {
             "code": "100",
             "data": [
@@ -289,7 +292,7 @@ Mock.mock('/getOrgByParentId', 'post', (data) => {
   
 })
 // 添加/修改/删除学校年级班级接口
-Mock.mock('/editOrg', 'post', (data) => {
+Mock.mock('/system/org/crud', 'post', (data) => {
     console.log(data,55555)
     return {
         "code": "100",

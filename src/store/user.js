@@ -30,7 +30,7 @@ const actions = {
         let result = await login(data)
         console.log(result.data.data.userInfo,456);
         
-        if (result.data.code) {
+        if (result.data.code==100) {
             localStorage.setItem("TOKEN", result.data.data.token);
             localStorage.setItem("userInfo",JSON.stringify(result.data.data.userInfo))
             commit('USERLOGIN', result.data.data)

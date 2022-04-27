@@ -37,12 +37,13 @@
               <span slot="title">用户管理</span>
               <el-menu-item index="/system/userManage/studentManage">学生管理</el-menu-item>
               <el-menu-item index="/system/userManage/teacherManage">教师管理</el-menu-item>
-              <el-menu-item index="/system/userManage/visitorManage">访客管理</el-menu-item>
+              <el-menu-item index="/system/userManage/visitorManage">访客添加</el-menu-item>
+              <el-menu-item index="/system/userManage/visitorCheck">访客审核</el-menu-item>
             </el-submenu>
             <el-submenu index="1-3">
               <span slot="title">基础维护</span>
-              <el-menu-item index="1-3-1">等级管理</el-menu-item>
-              <el-menu-item index="1-3-2">积分规则</el-menu-item>
+              <el-menu-item index="/system/baseMantain/gradeManage">等级管理</el-menu-item>
+              <el-menu-item index="/system/baseMantain/pointRule">积分规则</el-menu-item>
             </el-submenu>
           </el-submenu>
           <el-submenu  index="2" v-show="curIdx == 2">
@@ -52,13 +53,13 @@
             </template>
             <el-submenu index="1-1">
               <span slot="title">校园天地</span>
-              <el-menu-item index="1-1-1">信息发布</el-menu-item>
-              <el-menu-item index="1-1-2">信息审核</el-menu-item>
+              <el-menu-item index="/school/campus/publish">信息发布</el-menu-item>
+              <el-menu-item index="/school/campus/check">信息审核</el-menu-item>
             </el-submenu>
             <el-submenu index="1-2">
               <span slot="title">大屏公告</span>
-              <el-menu-item index="1-2-1">公告发布</el-menu-item>
-              <el-menu-item index="1-2-2">公告审核</el-menu-item>
+              <el-menu-item index="/school/largeScreen/publish">公告发布</el-menu-item>
+              <el-menu-item index="/school/largeScreen/check">公告审核</el-menu-item>
             </el-submenu>
           </el-submenu>
           <el-submenu index="3"  v-show="curIdx == 3">
@@ -66,13 +67,13 @@
               <!-- <i class="el-icon-location"></i> -->
               <span slot="title">跑道计时</span>
             </template>
-            <el-menu-item index="3-3">手环登记</el-menu-item>
-            <el-menu-item index="3-3">发令账号</el-menu-item>
-            <el-menu-item index="3-3">跑步项目</el-menu-item>
-            <el-menu-item index="3-3">日常跑步训练</el-menu-item>
-            <el-menu-item index="3-3">赛事发布</el-menu-item>
-            <el-menu-item index="3-3">赛事审核</el-menu-item>
-            <el-menu-item index="3-3">赛事报名</el-menu-item>
+            <el-menu-item index="/race/wristband">手环登记</el-menu-item>
+            <el-menu-item index="/race/order">发令账号</el-menu-item>
+            <el-menu-item index="/race/project">跑步项目</el-menu-item>
+            <el-menu-item index="/race/dailyRun">日常跑步训练</el-menu-item>
+            <el-menu-item index="/race/gamePublish">赛事发布</el-menu-item>
+            <el-menu-item index="/race/gameCheck">赛事审核</el-menu-item>
+            <el-menu-item index="/race/gameEnroll">赛事报名</el-menu-item>
           </el-submenu>
           <el-submenu index="4" v-show="curIdx == 4">
             <template slot="title">
