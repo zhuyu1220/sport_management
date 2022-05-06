@@ -1,15 +1,24 @@
 import request from '@/api/request2'
 // 查询菜单
-const getMenuListByParentId = (data)=> {
+export const getMenuListByParentId = (data)=> {
     return request({method:"post",url:"getMenuListByParentId",data})
 }
-const editMenuInfo = (data)=> {
-    return request({method:"post",url:"editMenuInfo",data})
+export const editMenuInfo = (data)=> {
+    return request({method:"post",url:"/system/menu/editMenu",data})
 }
-const menuLinkRole = (data) => {
+export const menuLinkRole = (data) => {
     return request({method:"post",url:"menuLinkRole",data})
 }
-const getRoleByMenuId = (data) => {
+
+export const getRoleByMenuId = (data) => {
     return request({method:"post",url:"getRoleByMenuId",data})
 }
-export { getMenuListByParentId,editMenuInfo,menuLinkRole,getRoleByMenuId}
+export const getMenuList = (params) => {
+    return request({method:"get",url:"system/menu/getMenuList",params})
+}   
+export const getMenuListAll = (params) => {
+    return request({method:"get",url:"/system/menu/getMenuListAll",params})
+}   
+export const queryByIdMenu = (params) => {
+    return request({method:"get",url:"/system/menu/queryByIdMenu",params})
+}

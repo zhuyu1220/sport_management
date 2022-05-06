@@ -3,44 +3,50 @@
     <el-card class="operate-container" shadow="never">
       <i class="el-icon-tickets" style="margin-top: 5px"></i>
       <span style="margin-top: 5px">数据列表</span>
-      <el-button class="btn-add" @click="alertAdd()" size="mini">
+      <div style="float:right">
+        <el-button class="btn-add" @click="alertAdd()" size="mini">
         添加
       </el-button>
+      </div>
+      
     </el-card>
-    <div class="table-container">
+    
+    <div >
+      <!-- 菜单栏展示 -->
+    
+         <!-- 菜单栏展示 -->
       <el-table
         ref="menuTable"
         style="width: 100%"
-        :data="list"
+        :data="menu"
         v-loading="listLoading"
+       row-key="id"
+       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
         border
       >
-        <el-table-column label="编号" width="100" align="center">
+        <!-- <el-table-column label="编号" width="100" align="center">
           <template slot-scope="scope">{{ scope.row.id }}</template>
-        </el-table-column>
+        </el-table-column> -->
+       
         <el-table-column label="菜单名称" align="center">
           <template slot-scope="scope">{{ scope.row.title }}</template>
         </el-table-column>
-        <el-table-column label="菜单级数" width="100" align="center">
-          <template slot-scope="scope">{{
-            scope.row.level | levelFilter
-          }}</template>
+         <el-table-column label="路由地址" align="center">
+          <template slot-scope="scope">{{ scope.row.url }}</template>
         </el-table-column>
-        <el-table-column label="前端名称" align="center">
-          <template slot-scope="scope">{{ scope.row.name }}</template>
-        </el-table-column>
-        <el-table-column label="前端图标" width="100" align="center">
+        <el-table-column label="前端图标" align="center">
           <template slot-scope="scope">{{ scope.row.icon }}</template>
         </el-table-column>
-        <el-table-column label="是否显示" width="100" align="center">
+   
+        <!-- <el-table-column label="是否显示" align="center">
           <template slot-scope="scope">
             {{ scope.row.hidden }}
           </template>
         </el-table-column>
         <el-table-column label="排序" width="100" align="center">
           <template slot-scope="scope">{{ scope.row.sort }}</template>
-        </el-table-column>
-        <el-table-column label="设置" width="120" align="center">
+        </el-table-column> -->
+        <!-- <el-table-column label="设置" width="120" align="center">
           <template slot-scope="scope">
             <el-button
               size="mini"
@@ -49,10 +55,10 @@
               >查看下级
             </el-button>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="操作" width="200" align="center">
           <template slot-scope="scope">
-            <el-button size="mini" type="text">授权 </el-button>
+        
             <el-button
               size="mini"
               type="text"
@@ -65,47 +71,54 @@
               @click="handleDelete(scope.$index, scope.row)"
               >删除
             </el-button>
+            <el-button
+              size="mini"
+              type="text"
+              @click="alertMenuLinkRole( scope.row)"
+              >关联角色
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
     <div class="dialog-container">
+      <!-- 菜单表单 -->
       <el-dialog
         :title="staticForm.title"
         :visible.sync="menuDialogVisible"
         width="width"
       >
         <el-form
-          :model="menu"
+          :model="form"
           :rules="rules"
           ref="menuForm"
           label-width="150px"
         >
-          <el-form-item label="菜单名称：" prop="title">
-            <el-input v-model="menu.title"></el-input>
+          <el-form-item label="菜单名称" prop="title">
+            <el-input v-model="form.title"></el-input>
           </el-form-item>
-          <el-form-item label="上级菜单：">
-            <el-select v-model="menu.parentId" placeholder="请选择菜单">
-              <el-option
-                v-for="item in selectMenuList"
-                :key="item.id"
-                :label="item.title"
-                :value="item.id"
-              >
-              </el-option>
-            </el-select>
+          <el-form-item label="上级菜单" prop="parentId" >
+           <el-cascader
+             :options="menu"
+             v-model="form.parentId"
+             :show-all-levels="false"
+            :props="{  
+              checkStrictly: true ,
+              emitPath:false,
+               label:'title',
+               value:'id'
+               
+               }"
+             clearable></el-cascader>
           </el-form-item>
-          <el-form-item label="前端名称：" prop="name">
-            <el-input v-model="menu.name"></el-input>
+          <el-form-item label="路由地址" prop="url">
+            <el-input v-model="form.url"></el-input>
           </el-form-item>
-          <el-form-item label="前端图标：" prop="icon">
-            <el-input v-model="menu.icon" style="width: 80%"></el-input>
-            <svg-icon
-              style="margin-left: 8px"
-              :icon-class="menu.icon"
-            ></svg-icon>
+          <el-form-item label="图标">
+             <el-input v-model="form.icon"></el-input>
           </el-form-item>
-          <el-form-item label="是否显示：">
+         
+          <!-- <el-form-item label="是否显示：">
             <el-radio-group v-model="menu.hidden">
               <el-radio :label="0">是</el-radio>
               <el-radio :label="1">否</el-radio>
@@ -113,37 +126,89 @@
           </el-form-item>
           <el-form-item label="排序：">
             <el-input v-model="menu.sort"></el-input>
-          </el-form-item>
+          </el-form-item>  -->
         </el-form>
         <div slot="footer">
           <el-button @click="menuDialogVisible = false">取 消</el-button>
           <el-button type="primary" @click="reqEditMenuInfo()">确定</el-button>
         </div>
       </el-dialog>
+          <!-- 菜单表单 -->
+          <!-- 菜单关联角色 -->
+      <el-dialog
+         title="关联角色"
+        :visible.sync="linkRoleDislogVisibe"
+        width="width"
+      >
+        <el-form
+          label-width="150px"
+        >
+         <el-form-item label="角色" prop="title">
+              <el-checkbox-group v-model="menuLinkRoleForm.roleId" >
+            <el-checkbox v-for="role in allRoles" :label="role.id" :key="role.id">{{role.name}}</el-checkbox>
+            </el-checkbox-group>
+          </el-form-item>
+        </el-form>
+        <div slot="footer">
+          <el-button @click="linkRoleDislogVisibe = false">取 消</el-button>
+          <el-button type="primary" @click="reqMenuLinkRole()">确定</el-button>
+        </div>
+      </el-dialog>
+          <!-- 菜单关联角色 -->
     </div>
   </div>
 </template>
 
 <script>
+function children2Null(tree){
+  tree.map(item => {
+    if (Array.isArray(item.children)) {
+      item.children.length === 0
+        ? (item.children = null)
+        : children2Null(item.children)
+    }
+  })
+  return tree
+}
 // import {fetchList,deleteMenu,updateMenu,updateHidden} from '@/api/menu'
 import {
   getMenuListByParentId,
   editMenuInfo,
   menuLinkRole,
   getRoleByMenuId,
+  queryByIdMenu,
+  getMenuListAll,
+   getAllRoles,
 } from "@/api";
+console.log(getAllRoles,555555555);
+
 export default {
   name: "menuList",
   data() {
     return {
-      menuDialogVisible: true,
-      list: null,
-      listLoading: true,
+      menuDialogVisible: false,
+      linkRoleDislogVisibe:false,
+      list: [],
+      listLoading: false,
       parentId: 0,
       staticForm: {
         title: "新增",
       },
-      menu: {
+      allRoles:[],
+      menuLinkRoleForm:{
+         roleId:[],
+         menuId:'',
+         ope:1
+
+      },
+      form:{
+          parentId:26,
+          title:'',
+          url:'',
+          icon:'',
+          ope:1
+      },
+      menuTable: {
         hidden: 0,
         icon: "",
         name: "",
@@ -188,56 +253,87 @@ export default {
     selectMenuList() {
       return [{ id: this.parentId, title: "无上级菜单" }, ...this.list];
     },
-  },
-  created() {
-    this.getList();
-  },
+    menu(){
+          // 得到的树状结构chilren若为[],置为空
 
+      return children2Null(this.$store.state.permission.menu) 
+    }
+  },
+ 
+  
   methods: {
+    
+   async  reqMenuLinkRole(){
+      const res = await  menuLinkRole(this.form)
+      if(res.data.code ==100){
+        this.message({
+          type:'success',
+          message:'操作成功'
+        })
+      }
+      this.linkRoleDislogVisibe = false
+    },
+  async  alertMenuLinkRole(menuId){
+       this.menuLinkRoleForm.menuId = menuId;
+      //  查询该菜单 关联的角色列表
+     const res  = await getRoleByMenuId({menuId})
+     if(res.data.code == 100){
+        this.menuLinkRoleForm.roleId = res.data.data.map((item)=>item.id)
+     }
+   
+      this.linkRoleDislogVisibe= true;
+    },
     alertAdd() {
-      (this.menu = {
-        hidden: 0,
-        icon: "",
-        name: "",
-        parentId: this.parentId,
-        sort: 0,
-        title: "",
-        ope: 1,
-      }),
-        (this.staticForm.title = "添加");
-      this.menuDialogVisible = true;
+      this.form = {
+         parentId:'',
+          title:'',
+          url:'',
+          icon:'',
+          ope:1
+      }
+      this.staticForm.title = "添加"
+      this.menuDialogVisible = true
+      this.$nextTick(() => {
+        this.$refs['menuForm'].clearValidate()
+      })
     },
-    //修改当前菜单
-    alertEdit(index, row) {
-      (this.menu = {
-        hidden: 0,
-        icon: "",
-        name: "",
-        parentId: 0,
-        sort: 0,
-        title: "",
-        id: row.id,
-        ope: 2,
-      }),
-        (this.staticForm.title = "编辑");
-      this.menuDialogVisible = true;
+    //编辑弹窗
+   async alertEdit(index, row) {
+       this.staticForm.title = "编辑"
+       this.menuDialogVisible = true
+       
+       try {
+          const res = await queryByIdMenu({id:row.id });
+          if (res) {
+            Object.assign(this.form, res.data.data);
+            this.form.ope = 2;
+            this.formDialog = true;
+             this.$nextTick(() => {
+               this.$refs['menuForm'].clearValidate()
+             })
+          }
+        } catch (error) {
+          this.formDialog = true;
+        }
+    
     },
-    // 接口:编辑菜单信息
+    // 提交
     async reqEditMenuInfo() {
-      console.log(editMenuInfo);
-      
       this.$refs.menuForm.validate(async (valid) => {
           if (!valid) {
             try {
-              const res = await editMenuInfo(this.menu);
-              if (res) {
+              const res = await editMenuInfo(this.form);
+              if(res){
+                // 查询列表
+                  this.$store.dispatch("permission/generateLeftMenu")
+              }
                 this.$message({
                   type: "success",
                   message: "操作成功",
                 });
-                this.getList();
+   
                 this.menuDialogVisible = false;
-              }
+             
             } catch (error) {
               console.log(error);
             }
@@ -254,11 +350,7 @@ export default {
         this.list = res.data.data.list;
       }
     },
-    //查看下级菜单
-    handleShowNextLevel(index, row) {
-      this.parentId = row.id;
-      this.getList();
-    },
+ 
     // 删除菜单
     handleDelete(index, row) {
       this.$confirm("是否要删除该菜单", "提示", {
@@ -266,16 +358,22 @@ export default {
         cancelButtonText: "取消",
         type: "warning",
       }).then(() => {
-        deleteMenu(row.id).then((response) => {
+        editMenuInfo({id:row.id,ope:0}).then((response) => {
           this.$message({
             message: "删除成功",
             type: "success",
             duration: 1000,
           });
-          this.getList();
+           this.$store.dispatch("permission/generateLeftMenu")
         });
       });
     },
+    // 获取所有角色
+   async  reqGetAllRoles(){
+       const res  = await getAllRoles()
+       this.allRoles = res.data.data
+
+    }
   },
   filters: {
     levelFilter(value) {
@@ -290,6 +388,9 @@ export default {
       }
     },
   },
+  mounted(){
+     this.reqGetAllRoles()
+  }
 };
 </script>
 

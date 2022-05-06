@@ -12,7 +12,7 @@ import request from '@/api/request2'
 	"state": "1-在用;0-禁用",
 	"year": "学校不需要，年级和班级，这个字段存的是学年信息的年份"
 */
-const editOrg = (data) => {
+export const editOrg = (data) => {
    return request({method:'post',url:"/system/org/crud",data})
 } 
 
@@ -25,7 +25,7 @@ const editOrg = (data) => {
   val上级机构的ID
   @return {"code":"100","data":[{"code":"机构编码","id":"1","lev":"1-学校;2-年级;3-班级","name":"组织名称","ope":"1-新增;2-修改;0-删除","parentId":"上一级的ID，若是学校则是-1","state":"1-在用;0-禁用","year":"学校不需要，年级和班级，这个字段存的是学年信息的年份"}],"dataSize":"12","msg":"通信成功"}
 */
-const getOrgByParentId = (params) => {
+export const getOrgByParentId = (params) => {
    return request({method:'get',url:"/system/org/queryParent",params})
 } 
 
@@ -52,7 +52,7 @@ const getOrgByParentId = (params) => {
 	"msg": "通信成功"
 }
 */
-const getStudentByOrgId = (data) => {
+export const getStudentByOrgId = (data) => {
    return request({method:'post',url:"/system/org/queryStudent",data})
 } 
 /*
@@ -60,10 +60,11 @@ const getStudentByOrgId = (data) => {
   @params
   @return 
 */
-
+export const getQueryOrg = (params) => {
+  return request({method:'get',url:"/system/org/queryOrg",params})
+}
 //同步学生年级信息
-const syncStudentGradeInfo = () => {
+export const syncStudentGradeInfo = () => {
    return request({method:'get',url:"/syncStudentGradeInfo",})
 } 
 
-export { editOrg,getOrgByParentId,getStudentByOrgId,syncStudentGradeInfo}

@@ -1,88 +1,133 @@
 <template>
- <div >
-   <editor  :id="tinymceId" :init="init">
-  </editor>
- </div>
- 
+  <!-- 富文本 -->
+  <div>
+    <editor v-model="content"  :id="tinymceId" :init="init" :disabled="disabled"></editor>
+  </div>
 </template>
 
 <script>
-import tinymce from 'tinymce/tinymce'
-import Editor from '@tinymce/tinymce-vue'
-import 'tinymce/themes/silver'
-// import 'tinymce/icons/default/icons.js'
-import 'tinymce/plugins/image'
+import tinymce from "tinymce/tinymce";
+import Editor from "@tinymce/tinymce-vue";
+import "tinymce/themes/silver/theme";
+import "tinymce/plugins/image";
+import "tinymce/plugins/link";
+import "tinymce/plugins/code";
+import "tinymce/plugins/table";
+import "tinymce/plugins/lists";
+import "tinymce/plugins/contextmenu";
+import "tinymce/plugins/fullscreen";
+import "tinymce/plugins/preview";
+import "tinymce/plugins/wordcount";
+import "tinymce/plugins/colorpicker";
+import "tinymce/plugins/textcolor";
+// 扩展插件
+// import "../assets/tinymce/plugins/lineheight/plugin";
+// import "../assets/tinymce/plugins/bdmap/plugin";
 
 export default {
-  name: 'RichText',
+  components: {
+    Editor,
+  },
   props: {
     id: {
-      type: String,
-      default: function () {
-        return 'vue-tinymce-' + +new Date() + ((Math.random() * 1000).toFixed(0) + '')
-      }
+        type: String,
+        function () {
+          return (
+            "vue-tinymce-" +
+            +new Date() +
+            ((Math.random() * 1000).toFixed(0) + "")
+          );
+        },
+     
     },
     value: {
       type: String,
-      default: ''
+      default: "",
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+    plugins: {
+      type: [String, Array],
+      default:
+        // "preview searchreplace autolink directionality visualblocks visualchars fullscreen image link media template code codesample table charmap hr nonbreaking insertdatetime advlist lists wordcount imagetools textpattern autosave bdmap autoresize lineheight"
+        "link code table lists wordcount  fullscreen preview image",
+    },
+    toolbar: {
+      type: [String, Array],
+      default:
+        "link code table wordcount | alignleft aligncenter alignright alignjustify outdent indent formatpainter | formatselect | fontselect | fontsizeselect | bullist numlist |",
+      // "code undo redo restoredraft | cut copy paste pastetext | forecolor backcolor bold italic underline strikethrough link codesample | alignleft aligncenter alignright alignjustify outdent indent lineheight formatpainter | \
+      // styleselect formatselect fontselect fontsizeselect | bullist numlist | blockquote subscript superscript removeformat | \
+      // table image media charmap hr pagebreak insertdatetime | bdmap fullscreen preview"
+    },
+  },
+  data() {
+   
+    return {
+         tinymceId: this.id,
+      //初始化配置
+      init: {
+        language_url: "/static/tinymce/zh-Hans.js",
+        language: "zh-Hans",
+        skin_url: "/static/tinymce/skins/ui/oxide",
+        content_css: "/static/tinymce/skins/content/document/content.css",
+        height: 780,
+        min_height: 780,
+        object_resizing: false, //禁用表格内联样式拖拽拉伸
+        table_resize_bars: false, //禁用表格单元格拖拽拉伸
+        images_upload_base_path: "",
+        images_upload_handler: (blobInfo, success, failure) =>
+          this.tinymceUploadImage(blobInfo, success, failure),
+        toolbar_mode: "wrap",
+        plugins: this.plugins,
+        toolbar: this.toolbar,
+        content_style: "p {margin: 5px 0;}", //内容样式
+        fontsize_formats: "12px 14px 16px 18px 24px 36px 48px 56px 72px",
+        font_formats:
+          "微软雅黑=Microsoft YaHei,Helvetica Neue,PingFang SC,sans-serif;苹果苹方=PingFang SC,Microsoft YaHei,sans-serif;宋体=simsun,serif;仿宋体=FangSong,serif;黑体=SimHei,sans-serif;Arial=arial,helvetica,sans-serif;Arial Black=arial black,avant garde;Book Antiqua=book antiqua,palatino;",
+        branding: false, //不显示富文本支持方
+        contextmenu: "undo redo | cut copy paste pastetext | selectall table", // 富文本右键菜单
+      },
+      content: this.value,
+    };
+  },
+  mounted() {
+    tinymce.init({});
+  },
+  methods: {
+    tinymceUploadImage(blobInfo, success, failure) {
+      const formData = new FormData();
+      // 服务端接收文件的参数名，文件数据，文件名
+      formData.append("upfile", blobInfo.blob(), blobInfo.filename());
+      this.$axios({
+        method: "post",
+        // 这里是你的上传地址
+        url: "/api/upload/image",
+        data: formData,
+      })
+        .then((res) => {
+          // 接口返回的图片地址
+          success(res.Data.msgbox);
+        })
+        .catch(() => {
+          failure("上传失败");
+        });
     },
   },
   watch: {
-    value (val) {
-      if (!this.hasChange && this.hasInit) {
-        this.$nextTick(() =>
-          window.tinymce.get(this.tinymceId).setContent(val || ''))
-      }
-    }
+    value(newValue) {
+      this.content = newValue;
+    },
+    content(newValue) {
+      this.$emit("input", newValue);
+    },
   },
-  data () {
-    const _this = this
-    return {
-      tinymceId: this.id,
-      hasInit: false,
-      hasChange: false,
-      init: {
-        language_url: '/static/tinymce/zh-Hans.js', // 语言包的路径
-        language: 'zh-Hans', // 语言
-        skin_url: '/static/tinymce/skins/ui/oxide', // skin路径
-        height: 300, // 编辑器高度
-        // toolbar: ' undo redo |  bold italic underline strikethrough image',
-        branding: false, // 去水印
-        elementpath: true, // 禁用编辑器底部的状态栏
-        statusbar: true, // 隐藏编辑器底部的状态栏
-        paste_data_images: true, // 允许粘贴图像
-        menubar: true, // 隐藏最上方menu
-        plugins: 'image', // 图片插件
-        mages_upload_url:'',//上传图片地址
-        images_upload_base_path: '/demo',
-        images_upload_handler: (blobInfo, success, failure) => {
-          // 这里可以请求接口
-          success('data:image/jpeg;base64,' + blobInfo.base64())
-        }, // 上传本地图片
-        init_instance_callback: editor => {
-          if (_this.value) {
-            editor.setContent(_this.value)
-          }
-          _this.hasInit = true
-          // 监听富文本内容的改变 将变化传回richtext的v-model
-          editor.on('NodeChange Change KeyUp SetContent', () => {
-            this.hasChange = true
-            this.$emit('input', editor.getContent())
-          })
-        }
-      }
-    }
-  },
-  components: {Editor},
-  mounted () {
-    tinymce.init({})
-  }
-}
+};
 </script>
-
-<style >
-   .tox-tinymce-aux {
-    z-index: 5000 !important;
-  }
+<style>
+.tox-tinymce-aux {
+  z-index: 5000 !important;
+}
 </style>
-

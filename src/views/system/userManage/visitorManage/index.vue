@@ -1,44 +1,59 @@
+
 <template>
-  <div class="">
-
-    <el-card>
-      <el-form
-        label-width="40px"
-        label-position="left"
-        inline
-        style="display: flex"
-      >
-        <el-form-item label="姓名">
-          <el-input type="text" v-model="queryParams.name"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary">搜索</el-button>
-        </el-form-item>
-      </el-form>
+  <div class="wrapper">
+    <!-- 搜索开始 -->
+    <el-card shadow="never">
+         <i class="el-icon-search"></i>
+          <span>筛选搜索</span>
+            <el-button style="float:right" @click="handleSearchList" size="small">搜索</el-button>
+            <el-button style="float:right;margin-right:15px"  @click="handleResetSearch()" size="small">
+              重置
+            </el-button>
+            <div style="margin-top:15px">
+              <el-form   size="small" label-width="140px" inline>
+          <el-form-item label="姓名">
+            <el-input type="text" v-model="queryParams.name"></el-input>
+          </el-form-item>
+        
+        </el-form>
+        </div>
     </el-card>
-
-    <el-card>
-
-      <el-row :gutter="24" justify="end" align="middle">
-        <el-col :span="8">
-          <el-button type="primary" @click="alertAdd">添加</el-button>
-          <el-button type="primary" icon="el-icon-document">批量导入</el-button>
-        </el-col>
-      </el-row>
-
+      <!-- 搜索结束-->
+      <!-- 工具栏开始 -->
+    <el-card shadow="never" style="margin:15px 0;">
+          <i class="el-icon-tickets"></i>
+      <span>数据列表</span>
+        <div style="float:right;margin-right:15px">
+           <el-button type="primary"  @click="excelDialogVisible = true"  size="mini"  icon="">批量导入</el-button>
+          <el-button size='mini' @click="alertAdd">添加</el-button>
+        </div>
     </el-card>
-
+       <!-- 工具栏结束 -->
     <el-table
+      v-loading="loading"
       :data="tableData"
+      border
       style="width: 100%"
-      @selection-change="handleSelectionChange"
+       @selection-change="handleSelectionChange"
+      :headerCellStyle="{ background: '#C0C4CC' }"
+      :headerRowStyle="{ color: '#000' }"
     >
-      <el-table-column type="selection" width="55"> </el-table-column>
+         <el-table-column
+      type="selection"
+      width="55"/>
+      <el-table-column type="index" label="序号" width="60px">
+     
+    </el-table-column>
+ 
       <el-table-column prop="name" label="姓名" width="width">
       </el-table-column>
-      <el-table-column prop="gender" label="姓名" width="width">
-      </el-table-column>
-      <el-table-column prop="picId" label="照片" width="width">
+       <el-table-column  label="照片" width="width">
+          <template scope="scope">
+             <el-image
+                style="width: 100px; height: 100px"
+                :src="scope.row.pic"
+                fit="contain "></el-image>
+          </template>
       </el-table-column>
       <el-table-column prop="height" label="身高" width="width">
       </el-table-column>
@@ -46,81 +61,81 @@
       </el-table-column>
       <el-table-column prop="phone" label="联系方式" width="width">
       </el-table-column>
-      <el-table-column label="审核状态" width="width">
+      <el-table-column  label="审核状态" width="width">
         <template slot-scope="scope">
-          {{ scope.row.state }}
+            {{scope.row.state}}
         </template>
       </el-table-column>
       <el-table-column label="操作">
+        
         <template slot-scope="scope">
-          <el-button type="text" @click="alertUpdate(scope.row.id)"
-            >编辑</el-button
-          >
+          <el-button type="text" @click="alertUpdate(scope.row.id)">编辑</el-button>
           <el-button type="text" @click="reqDelete(scope.row.id)"
             >删除</el-button
           >
+        
         </template>
       </el-table-column>
     </el-table>
 
-    <el-row type="flex" justify="end" :gutter="12">
-      <el-col :span="6">
-        <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="queryParams.currentPage"
-          :page-sizes="[10, 20, 30, 40]"
-          :page-size="10"
-          layout=" sizes, prev, pager, next, jumper,total"
-          :total="total"
-        >
-        </el-pagination>
-      </el-col>
+    <div style="float: right">
+      <el-pagination
+        background
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="queryParams.currentPage"
+        :page-sizes="[5, 10, 15]"
+        :page-size="10"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+      >
+      </el-pagination>
+    </div>
 
-    </el-row>
-
+    <!-- 编辑账号表单对话框开始 -->
     <el-dialog
-      :title="staticUserForm.title"
-      :visible.sync="formDialogVisible"
+      :title="staticForm.title"
+      :visible.sync="formDialog"
       width="width"
     >
-      <el-form
-        label-width="100px"
-        label-position="left"
-        :model="userForm"
-        ref="userform"
-        :rules="formRules"
-      >
-        <el-form-item label="姓名" prop="name">
-          <el-input v-model="userForm.name"></el-input>
+      <el-form :model="form" ref="form" :rules="formRules" label-position="left" label-width="120px">
+       
+         <el-form-item label="姓名" prop="name">
+          <el-input v-model="form.name"></el-input>
         </el-form-item>
-        <el-form-item label="性别">
-          <el-radio v-model="userForm.gender" label="1">男</el-radio>
-          <el-radio v-model="userForm.gender" label="0">女</el-radio>
+        <el-form-item label="性别" prop="gender">
+          <el-radio v-model="form.gender" label="1">男</el-radio>
+          <el-radio v-model="form.gender" label="0">女</el-radio>
         </el-form-item>
-        <el-form-item label="照片上传">
-          <div class="avatar-uploader">
+        <el-form-item label="照片上传"  prop="pic">
+          <div class="avatar-uploader" style="margin-bottom:30px">
             <el-upload
-              action="https://jsonplaceholder.typicode.com/posts/"
-              list-type="picture-card"
-              :on-success="handleAvatarSuccess"
+                  drag
+                  :limit="1"
+                  list-type="picture-card"
+                  :file-list="form.pic"
+                  action=""
+                  :auto-upload="false"
+                  :on-change="onChangeFile"
+                  :on-remove="onRemoveFile"
+                  ref="upload"
             >
-              <i class="el-icon-plus"></i>
+            
             </el-upload>
           </div>
         </el-form-item>
-        <el-form-item label="联系方式">
-          <el-input v-model="userForm.phone"></el-input>
+        <el-form-item label="联系方式" prop="phone">
+          <el-input v-model="form.phone"></el-input>
         </el-form-item>
-        <el-form-item label="身高">
-          <el-input v-model="userForm.name"></el-input>
+        <el-form-item label="身高(厘米)" prop="height">
+          <el-input v-model="form.height"></el-input>
         </el-form-item>
-        <el-form-item label="体重">
-          <el-input v-model="userForm.account"></el-input>
+        <el-form-item label="体重(千克)" prop="weight">
+          <el-input v-model="form.weight"></el-input>
         </el-form-item>
-        <el-form-item label="学校">
+        <el-form-item label="学校" prop="schoolCode">
           <el-select
-            v-model="userForm.schoolCode"
+            v-model="form.schoolCode"
             placeholder="学校"
           >
             <el-option
@@ -131,211 +146,279 @@
             ></el-option>
           </el-select>
         </el-form-item>
+     
       </el-form>
       <div slot="footer">
-        <el-button @click="formDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="reqSubmitUserForm">确 定</el-button>
+        <el-button @click="formDialog = false">取 消</el-button>
+        <el-button type="primary" @click="reqEditInfo()"
+          >确 定</el-button
+        >
       </div>
     </el-dialog>
+    <!-- 编辑账号表单对话框结束 -->
+      <!-- 上传excel -->
+           <el-dialog
+             title="批量上传"
+             :visible.sync="excelDialogVisible"
+             width="width"
+            >
+             <div>
+               <el-upload
+               ref="uploadExcel"
+                action=""
+                :limit="1"
+                :http-request="batchUpload"
+                  accept=".xls,.xlsx,"
+                >
+      <el-button size="small" type="primary">点击上传</el-button>
+     <div slot="tip" class="el-upload__tip">一次只能上传一个xls/xlsx文件，且不超过10M</div>
+  
+     </el-upload>
+             </div>
+             <div slot="footer">
+               <el-button @click="excelDialogVisible = false">取 消</el-button>
+               <el-button type="primary" @click="excelDialogVisible = false">确 定</el-button>
+             </div>
+           </el-dialog>
+         <!-- 上传excel -->
   </div>
 </template>
 
 <script>
+
+
 import {
-  editVistorInfo,
-  queryVistorByPage,
-  checkVistorInfo,
-  getVistroById,
+  getVisitorById,
+ 
+  editVisitorInfo,
   getOrgByParentId,
+  queryVisitorByPage,
 } from "@/api/index.js";
 export default {
   data() {
     return {
-      
-      multipleSelection: [],
-      staticUserForm: {
-        title: "增加",
+      loading: false,
+      formDialog: false,
+      excelDialogVisible:false,
+      multipleSelection:[],
+      tableData: [],
+      staticForm: {
+        title: "添加",
       },
-      formDialogVisible: false,
-      schoolList: [],
-      userInfo: {},
-      checkInfo:{
-        ope:1,
-        ids:[],
-      },
-      userForm: {
+      form: {
         ope: 1,
         id: "",
         state: 0,
-        isRegiste: "",
+        no: "",
         name: "",
         gender: "1",
         height: "",
         weight: "",
-        phone: "",
-        picId: "",
         schoolCode: "",
+        phone: "",
+        pic: [],
+        isRegiste: "",
       },
-      tableData: [
-        {
-          classCode: "3",
-          ctime: "2022-04-12 17:44:22",
-          gender: "1-男，0-女，2-未知",
-          gradeCode: "2",
-          height: "170",
-          id: "1",
-          isRegiste: "1-已上传，0-未上传",
-          name: "钱敬冬",
-          no: "20220412",
-          ope: "1-新增;2-修改;0-删除",
-          phone1: "",
-          phone2: "",
-          phone3: "",
-          picId: "",
-          schoolCode: "1",
-          state: "1",
-          weight: "60",
-        },
-      ],
+      formRules: {
+        name: [{ required: true, message: "请输入姓名", trigger: "blur" }],
+      
+      //   height: [{ type: 'number', message: "请输入正确的格式", trigger: "blur" }],
+      //   weight: [{ type: 'number', message: "请输入正确的格式", trigger: "blur" }],
+        schoolCode: [{ required: true, message: "请选择学校", trigger: "change" }],
+        phone: [{ required: true, message: "请输入联系方式", trigger: "blur" }],
+        pic: [{ required: true, message: "请上传照片", trigger: "blur" }],
+       
+      },
+      // 查询账号所需参数
       queryParams: {
         currentPage: 1,
         pageSize: 10,
         name: "",
       },
-      formRules: {
-        no: [{ required: true, message: "请输入", trigger: "blur" }],
-        name: [{ required: true, message: "请输入", trigger: "blur" }],
-        height: [{ required: true, message: "请输入", trigger: "blur" }],
-        weight: [{ required: true, message: "请输入", trigger: "blur" }],
-      },
-      total: 1,
+      total: 0,
+      schoolList:[]
     };
   },
   methods: {
-    reqDelete(id) {
-      this.$confirm("此操作将删除该角色, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      }).then(async () => {
-        const res = await editStudentInfo({ id, ope: 0 });
-        if (res.data.code == 100) {
-          this.$message({
-            type: "success",
-            message: "删除成功",
-          });
-          this.reqQueryStudentByPage();
-        }
-      });
+   onChangeFile(file,fileList){
+   this.form.pic = fileList;
+   },
+  //  fileList 需要上传的文件列表  file 上传的文件 file.raw raw 是文件
+   onRemoveFile(file,fileList){
+      this.form.pic = fileList;
+   },
+   // 将表格多选的值 赋值给multipleSelection  
+    handleSelectionChange(val){
+           this.multipleSelection = val;
+           
     },
-    alertUpdate() {
-      this.staticUserForm = {
-        title: "修改",
-      };
-      this.formDialogVisible = true;
-      // 将查询到的数据回显
-      const res = this.getVistroById();
-      if (res.data.code == 100) {
-        Object.assign(this.userForm, res.data.data);
-        this.userForm.ope = 1;
-      }
+    // 修改每页展示条数
+    handleSizeChange(val) {
+      this.queryParams.currentPage = 1;
+      this.queryParams.pageSize = val;
+      this.reqQueryByPages();
     },
-    alertAdd() {
-      this.staticUserForm = {
-        title: "增加",
-      };
-      this.userForm = {
+    // 修改页码
+    handleCurrentChange(val) {
+      this.queryParams.currentPage = 1;
+      this.queryParams.currentPage = val;
+      this.reqQueryByPages();
+    },
+    // 条件查询初始化  将分页查询中的条件置空
+    handleResetSearch(){
+        this.queryParams.name =''
+    },
+    //点击查询按钮 发送分页查询请求
+    handleSearchList(){
+       this.queryParams.currentPage =1
+       this.reqQueryByPages();
+    },
+    //表单信息初始化 
+    resetForm(){
+      this.form = {
         ope: 1,
         id: "",
         state: 0,
-        isRegiste: "",
+        no: "",
         name: "",
         gender: "1",
         height: "",
         weight: "",
-        phone: "",
-        picId: "",
         schoolCode: "",
-      };
-
-      this.formDialogVisible = true;
-    },
-    // 分页查询
-    async reqQueryStudentByPage() {
-      const res = await queryVistorByPage(this.queryParams);
-      this.total = res.data.dataSize;
-      this.tableData = res.data.data;
-    },
-    async reqSubmitUserForm() {
-      this.$refs.userform.validate(async (valid) => {
-        if (valid) {
-          const res = await editVistorInfo(this.userForm);
-          if (res.data.code == 100) {
-            this.$message({
-              type: "success",
-              message: "操作成功",
-            });
-            this.reqQueryStudentByPage();
-          }
-        }
-      });
-    },
-    async reqCheckUserInfo() {
-      const res = checkVistorInfo(this.checkInfo);
-      if(res.data.code ==100){
-        this.reqQueryStudentByPage()
+        phone: "",
+        pic: [],
+        isRegiste: "",
       }
     },
-    async reqGetOrgByParentId(parentId) {
+    //增加信息弹框
+    alertAdd() {
+      this.resetForm()
+      this.staticForm.title = "添加访客信息";
+      this.formDialog = true;
+      this.$nextTick(() => {
+        this.$refs['form'].clearValidate()
+      })
+    },
+    //修改信息弹框
+    async alertUpdate(id) {
+      this.staticForm.title = "修改访客信息";
+      if(id) {
+        try {
+          const res = await getVisitorById({ id });
+          if (res) {
+            Object.assign(this.form, res.data.data);
+            this.form.ope = 2;
+            this.formDialog = true;
+             this.$nextTick(() => {
+               this.$refs['form'].clearValidate()
+             })
+          }
+        } catch (error) {
+          this.formDialog = true;
+        }
+      }
+    },
+    // 删除信息请求
+    async alertDelete(id) {
+      let params = {
+        id,
+        ope: 0,
+      };
+      const res = await this.$confirm("此操作将会永久删除该信息, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      });
+      if (res) {
+        const editRes = await editVisitorInfo(params);
+        if (editRes.data.code == 100) {
+          this.$message({
+            type: "success",
+            message: "删除成功",
+          });
+          this.reqQueryByPages();
+        }
+      }
+    },
+    // 获取学校列表
+     async reqGetOrgByParentId(parentId) {
       const res = await getOrgByParentId({ parentId });
       if (res.data.code == 100) {
         this.schoolList = res.data.data;
       }
     },
-    handleAvatarSuccess(res) {
-      this.userForm.picId = res.data;
+   //添加信息 修改信息 请求
+    reqEditInfo() {
+      this.$refs.form.validate(async (valid) => {
+        if (valid) {
+          let formData = new FormData();
+          for(let item in Object.keys(this.form)){
+             if(item == 'pic'){
+                 formData.append(item,this.form[item][0].raw)
+             }
+             formData.append(item,this.form[item])
+          }
+      
+          const res = await editVisitorInfo(formData);
+          if (res.data.code == 100) {
+            this.$message({
+              type: "success",
+              message: "操作成功",
+            });
+            this.$refs.form.resetFields()
+            this.formDialog = false;
+          }
+          this.reqQueryByPages();
+        }
+      });
     },
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
+   
+    // 分页+条件查询
+    async reqQueryByPages() {
+      this.loading = true;
+      try {
+        const res = await queryVisitorByPage(this.queryParams);
+        if (res.data.code == 100) {
+          this.tableData = res.data.data;
+          this.total = +res.data.dataTotal;
+          this.loading = false;
+        }
+      } catch (err) {
+        console.log(err);
+        this.loading = false;
+      }
     },
-    handleSizeChange(val) {
-      this.queryParams.pageSize = val;
-      this.reqQueryStudentByPage();
-    },
-    handleCurrentChange(val) {
-      this.queryParams.currentPage = val;
-      this.reqQueryStudentByPage();
-    },
+   // 批量上传
+    batchUpload(param){
+        const formData = new FormData()
+        formData.append('file', param.file);
+        this.$axios.post('/uploadExcel',formData).then(()=>{
+         this.$message({
+           type:'success',
+           message:'上传成功'
+         })
+         this.reqQueryStudentByPage()
+        }).catch(()=>{
+           this.$message({
+           type:'error',
+           message:'上传失败'
+         })
+        })
+    }
+
+   
   },
   mounted() {
-    this.reqQueryStudentByPage();
+    this.reqQueryByPages();
     this.reqGetOrgByParentId(-1);
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.avatar-uploader::v-deep .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-.avatar-uploader::v-deep .el-upload:hover {
-  border-color: #409eff;
-}
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  line-height: 178px;
-  text-align: center;
-}
-.avatar {
-  width: 178px;
-  height: 178px;
-  display: block;
+.el-table__heade::v-deep .tableHeader {
+  color: red;
+  background-color: #fff;
 }
 </style>
+>

@@ -11,91 +11,14 @@
         <el-menu
           ref="menu1"
           router
-           :default-active="$route.path"
+         :default-active="$route.path"
           background-color="#0d6cde"
           text-color="#fff"
           active-text-color="#fff"
           class="el-menu-demo"
           unique-opened
         >
-          <el-menu-item index="/home" v-show="curIdx == 0">
-            <i class="iconfont icon-home"></i>
-             首页 </el-menu-item>
-          <el-submenu index="1"  v-show="curIdx == 1">
-            <template slot="title">
-              <!-- <i class="el-icon-location"></i> -->
-              <span slot="title">系统管理</span>
-            </template>
-            <el-submenu index="1-1">
-              <span slot="title">平台授权</span>
-              <el-menu-item index="/system/authorization/organizationManage">组织管理</el-menu-item>
-              <el-menu-item index="/system/authorization/roleManage">角色管理</el-menu-item>
-              <el-menu-item index="/system/authorization/accountMangae">账号管理</el-menu-item>
-              <el-menu-item index="/system/authorization/menuManage">菜单授权</el-menu-item>
-            </el-submenu>
-            <el-submenu index="1-2">
-              <span slot="title">用户管理</span>
-              <el-menu-item index="/system/userManage/studentManage">学生管理</el-menu-item>
-              <el-menu-item index="/system/userManage/teacherManage">教师管理</el-menu-item>
-              <el-menu-item index="/system/userManage/visitorManage">访客添加</el-menu-item>
-              <el-menu-item index="/system/userManage/visitorCheck">访客审核</el-menu-item>
-            </el-submenu>
-            <el-submenu index="1-3">
-              <span slot="title">基础维护</span>
-              <el-menu-item index="/system/baseMantain/gradeManage">等级管理</el-menu-item>
-              <el-menu-item index="/system/baseMantain/pointRule">积分规则</el-menu-item>
-            </el-submenu>
-          </el-submenu>
-          <el-submenu  index="2" v-show="curIdx == 2">
-            <template slot="title">
-              <!-- <i class="el-icon-location"></i> -->
-              <span slot="title">校园天地</span>
-            </template>
-            <el-submenu index="1-1">
-              <span slot="title">校园天地</span>
-              <el-menu-item index="/school/campus/publish">信息发布</el-menu-item>
-              <el-menu-item index="/school/campus/check">信息审核</el-menu-item>
-            </el-submenu>
-            <el-submenu index="1-2">
-              <span slot="title">大屏公告</span>
-              <el-menu-item index="/school/largeScreen/publish">公告发布</el-menu-item>
-              <el-menu-item index="/school/largeScreen/check">公告审核</el-menu-item>
-            </el-submenu>
-          </el-submenu>
-          <el-submenu index="3"  v-show="curIdx == 3">
-            <template slot="title">
-              <!-- <i class="el-icon-location"></i> -->
-              <span slot="title">跑道计时</span>
-            </template>
-            <el-menu-item index="/race/wristband">手环登记</el-menu-item>
-            <el-menu-item index="/race/order">发令账号</el-menu-item>
-            <el-menu-item index="/race/project">跑步项目</el-menu-item>
-            <el-menu-item index="/race/dailyRun">日常跑步训练</el-menu-item>
-            <el-menu-item index="/race/gamePublish">赛事发布</el-menu-item>
-            <el-menu-item index="/race/gameCheck">赛事审核</el-menu-item>
-            <el-menu-item index="/race/gameEnroll">赛事报名</el-menu-item>
-          </el-submenu>
-          <el-submenu index="4" v-show="curIdx == 4">
-            <template slot="title">
-              <!-- <i class="el-icon-location"></i> -->
-              <span slot="title">数据统计</span>
-            </template>
-            <el-menu-item index="/data/roadCount">校园智道统计</el-menu-item>
-            <el-menu-item index="/data/roadAnalysis">校园智道分析</el-menu-item>
-            <el-menu-item index="/data/aiCount">AI体侧统计</el-menu-item>
-            <el-menu-item index="/data/aiAnalysis">AI体侧分析</el-menu-item>
-            <el-menu-item index="/data/runCount">跑步计时统计</el-menu-item>
-            <el-menu-item index="/data/runReport">跑步计时报告</el-menu-item>
-            <el-menu-item index="/data/attendanceCount">出勤统计</el-menu-item>
-          </el-submenu>
-          <el-submenu index="5"  v-show="curIdx == 5">
-            <template slot="title">
-              <!-- <i class="el-icon-location"></i> -->
-              <span slot="title">积分商城</span>
-            </template>
-            <el-menu-item index="555">商城维护</el-menu-item>
-            <el-menu-item index="666">兑换记录</el-menu-item>
-          </el-submenu>
+             <MyItem :data="sidebar"></MyItem>
         </el-menu>
       </el-aside>
 
@@ -142,15 +65,21 @@
 </template>
 
 <script>
+import MyItem from "./MyItem.vue"; // 引入递归菜单组件
 export default {
   data() {
     return {
       curIdx: 0,
-      activeMenu:this.$router.path
+
     };
   },
+   components: {
+    MyItem, // 注册一下
+  },
   computed:{
-
+    sidebar() {
+      return this.$store.state.permission.menu
+    },
   },
   methods: {
     clickMenu(index) {
@@ -197,8 +126,6 @@ export default {
     }
 }
 .topBar {
-
- 
   display: flex;
   align-items: center;
   min-width: 1400px;
@@ -289,55 +216,55 @@ export default {
     border-left: 14px  solid transparent;
     position: absolute;
   }
-   &::v-deep .el-menu{
+//    &::v-deep .el-menu{
    
-     border:0
-  }
-  &::v-deep .el-submenu__title{
-    font-size: 18px;
-  }
-  &::v-deep .el-submenu .el-menu-item:nth-of-type(1){
-      border-top: 2px solid #799FCF;
-  }
+//      border:0
+//   }
+//   &::v-deep .el-submenu__title{
+//     font-size: 18px;
+//   }
+//   &::v-deep .el-submenu .el-menu-item:nth-of-type(1){
+//       border-top: 2px solid #799FCF;
+//   }
 
-  .el-menu-item{
-    font-size: 18px;
-    text-align: center;
-    border-bottom: 2px solid #799FCF;
+//   .el-menu-item{
+//     font-size: 18px;
+//     text-align: center;
+//     border-bottom: 2px solid #799FCF;
  
-  }
-    .is-active{
-      position: relative;
-    }
-  .is-active::before{
-    content: "";
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: white;
-    position: absolute;
-    top: 50%;
-    left: 57px;
-  }
-  .el-menu-demo>.el-menu-item:nth-of-type(1){
-       border-bottom: none;
-    }
-  .el-menu-item i {
-    color: #fff;
-    font-size: 18px;
+//   }
+//     .is-active{
+//       position: relative;
+//     }
+//   .is-active::before{
+//     content: "";
+//     width: 8px;
+//     height: 8px;
+//     border-radius: 50%;
+//     background: white;
+//     position: absolute;
+//     top: 50%;
+//     left: 57px;
+//   }
+//   .el-menu-demo>.el-menu-item:nth-of-type(1){
+//        border-bottom: none;
+//     }
+//   .el-menu-item i {
+//     color: #fff;
+//     font-size: 18px;
 
 
-    padding-right: 18px;
-}
+//     padding-right: 18px;
+// }
  
-    &::v-deep .el-submenu__title i {
-      color: #fff;
-      font-size: 18px;
+//     &::v-deep .el-submenu__title i {
+//       color: #fff;
+//       font-size: 18px;
     
-}
-    &::v-deep .el-submenu__icon-arrow{
-         right:45px;
-       }
+// }
+//     &::v-deep .el-submenu__icon-arrow{
+//          right:45px;
+//        }
 
 
 }

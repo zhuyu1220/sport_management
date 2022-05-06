@@ -1,0 +1,607 @@
+[
+    {
+        "id": 1,
+        "name": "home",
+        "state": 1,
+        "parentId": null,
+        "lev": 1,
+        "url": "/home",
+        "title": "首页",
+        "icon": "el-icon",
+        "hidden": null,
+        "path": "/home",
+        "children": [
+            
+        ]
+    },
+    {
+        "id": 2,
+        "name": null,
+        "state": 1,
+        "parentId": null,
+        "lev": 1,
+        "url": null,
+        "title": "系统管理",
+        "icon": null,
+        "hidden": null,
+        "path": null,
+        "children": [
+            {
+                "id": 3,
+                "name": null,
+                "state": 1,
+                "parentId": 2,
+                "lev": 2,
+                "url": null,
+                "title": "平台授权",
+                "icon": null,
+                "hidden": null,
+                "path": null,
+                "children": [
+                    {
+                        "id": 4,
+                        "name": "organizationManage",
+                        "state": 1,
+                        "parentId": 3,
+                        "lev": 3,
+                        "url": "/system/authorization/organizationManage",
+                        "title": "组织管理",
+                        "icon": null,
+                        "hidden": null,
+                        "path": "/system/authorization/organizationManage",
+                        "children": [
+                            
+                        ]
+                    },
+                    {
+                        "id": 5,
+                        "name": "organizationManage",
+                        "state": 1,
+                        "parentId": 3,
+                        "lev": 3,
+                        "url": "/system/authorization/organizationManage",
+                        "title": "角色管理",
+                        "icon": null,
+                        "hidden": null,
+                        "path": "/system/authorization/organizationManage",
+                        "children": [
+                            
+                        ]
+                    },
+                    {
+                        "id": 6,
+                        "name": "organizationManage",
+                        "state": 1,
+                        "parentId": 3,
+                        "lev": 3,
+                        "url": "/system/authorization/organizationManage",
+                        "title": "账号管理",
+                        "icon": null,
+                        "hidden": null,
+                        "path": "/system/authorization/organizationManage",
+                        "children": [
+                            
+                        ]
+                    },
+                    {
+                        "id": 7,
+                        "name": "menuManage",
+                        "state": 1,
+                        "parentId": 3,
+                        "lev": 3,
+                        "url": "/system/authorization/menuManage",
+                        "title": "菜单管理",
+                        "icon": null,
+                        "hidden": null,
+                        "path": "/system/authorization/menuManage",
+                        "children": [
+                            
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": 8,
+                "name": null,
+                "state": 1,
+                "parentId": 2,
+                "lev": 2,
+                "url": null,
+                "title": "用户管理",
+                "icon": "el-icon",
+                "hidden": null,
+                "path": null,
+                "children": [
+                    {
+                        "id": 9,
+                        "name": "studentManage",
+                        "state": 1,
+                        "parentId": 8,
+                        "lev": 3,
+                        "url": "/system/userManage/studentManage",
+                        "title": "学生管理",
+                        "icon": null,
+                        "hidden": null,
+                        "path": "/system/userManage/studentManage",
+                        "children": [
+                            
+                        ]
+                    },
+                    {
+                        "id": 10,
+                        "name": "teacherManage",
+                        "state": 1,
+                        "parentId": 8,
+                        "lev": 3,
+                        "url": "system/userManage/teacherManage",
+                        "title": "教师管理",
+                        "icon": null,
+                        "hidden": null,
+                        "path": "/system/userManage/teacherManage",
+                        "children": [
+                            
+                        ]
+                    },
+                    {
+                        "id": 11,
+                        "name": "vistorManage",
+                        "state": 1,
+                        "parentId": 8,
+                        "lev": 3,
+                        "url": "/system/userManage/vistorManage",
+                        "title": "访客添加",
+                        "icon": null,
+                        "hidden": null,
+                        "path": "/system/userManage/vistorManage",
+                        "children": [
+                            
+                        ]
+                    },
+                    {
+                        "id": 12,
+                        "name": "visitorCheck",
+                        "state": 1,
+                        "parentId": 8,
+                        "lev": 3,
+                        "url": "/system/userManage/visitorCheck",
+                        "title": "访客审核",
+                        "icon": null,
+                        "hidden": null,
+                        "path": "/system/userManage/visitorCheck",
+                        "children": [
+                            
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": 13,
+                "name": null,
+                "state": 1,
+                "parentId": 2,
+                "lev": 2,
+                "url": null,
+                "title": "基础维护",
+                "icon": null,
+                "hidden": null,
+                "path": null,
+                "children": [
+                    {
+                        "id": 14,
+                        "name": "studentManage",
+                        "state": 1,
+                        "parentId": 13,
+                        "lev": 3,
+                        "url": "/system/baseMantain/gradeManage",
+                        "title": "等级管理",
+                        "icon": null,
+                        "hidden": null,
+                        "path": "/system/baseMantain/gradeManage",
+                        "children": [
+                            
+                        ]
+                    },
+                    {
+                        "id": 15,
+                        "name": "pointRule",
+                        "state": 1,
+                        "parentId": 13,
+                        "lev": 3,
+                        "url": "system/pointRule/pointRule",
+                        "title": "积分规则",
+                        "icon": null,
+                        "hidden": null,
+                        "path": "/system/pointRule/pointRule",
+                        "children": [
+                            
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 16,
+        "name": null,
+        "state": 1,
+        "parentId": null,
+        "lev": 1,
+        "url": null,
+        "title": "校园天地",
+        "icon": "el-icon",
+        "hidden": null,
+        "path": null,
+        "children": [
+            {
+                "id": 17,
+                "name": null,
+                "state": 1,
+                "parentId": 16,
+                "lev": 2,
+                "url": null,
+                "title": "校园信息",
+                "icon": null,
+                "hidden": null,
+                "path": null,
+                "children": [
+                    {
+                        "id": 18,
+                        "name": "campusPublish",
+                        "state": 1,
+                        "parentId": 17,
+                        "lev": 3,
+                        "url": "/school/campus/publish",
+                        "title": "信息发布",
+                        "icon": null,
+                        "hidden": null,
+                        "path": "/school/campus/publish",
+                        "children": [
+                            
+                        ]
+                    },
+                    {
+                        "id": 19,
+                        "name": "organizationManage",
+                        "state": 1,
+                        "parentId": 17,
+                        "lev": 3,
+                        "url": "/school/campus/check",
+                        "title": "信息审核",
+                        "icon": null,
+                        "hidden": null,
+                        "path": "/school/campus/check",
+                        "children": [
+                            
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": 20,
+                "name": null,
+                "state": 1,
+                "parentId": 16,
+                "lev": 2,
+                "url": null,
+                "title": "大屏公告",
+                "icon": null,
+                "hidden": null,
+                "path": null,
+                "children": [
+                    {
+                        "id": 21,
+                        "name": "largeScreenPublish",
+                        "state": 1,
+                        "parentId": 20,
+                        "lev": 3,
+                        "url": "/school/largeScreen/publish",
+                        "title": "信息发布",
+                        "icon": null,
+                        "hidden": null,
+                        "path": "/school/largeScreen/publish",
+                        "children": [
+                            
+                        ]
+                    },
+                    {
+                        "id": 22,
+                        "name": "largeScreenCheck",
+                        "state": 1,
+                        "parentId": 20,
+                        "lev": 3,
+                        "url": "/school/largeScreen/check",
+                        "title": "信息审核",
+                        "icon": null,
+                        "hidden": null,
+                        "path": "/school/largeScreen/check",
+                        "children": [
+                            
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 23,
+        "name": null,
+        "state": 1,
+        "parentId": null,
+        "lev": 1,
+        "url": null,
+        "title": "跑步记时",
+        "icon": "el-icon",
+        "hidden": null,
+        "path": null,
+        "children": [
+            {
+                "id": 24,
+                "name": "wristband",
+                "state": 1,
+                "parentId": 23,
+                "lev": 2,
+                "url": "/race/wristband",
+                "title": "手环登记",
+                "icon": "el-icon",
+                "hidden": null,
+                "path": "/race/wristband",
+                "children": [
+                    
+                ]
+            },
+            {
+                "id": 25,
+                "name": "order",
+                "state": 1,
+                "parentId": 23,
+                "lev": 2,
+                "url": "/race/order",
+                "title": "发令账号",
+                "icon": "el-icon",
+                "hidden": null,
+                "path": "/race/order",
+                "children": [
+                    
+                ]
+            },
+            {
+                "id": 26,
+                "name": "project",
+                "state": 1,
+                "parentId": 23,
+                "lev": 2,
+                "url": "/race/project",
+                "title": "跑步项目",
+                "icon": "el-icon",
+                "hidden": null,
+                "path": "/race/project",
+                "children": [
+                    
+                ]
+            },
+            {
+                "id": 27,
+                "name": "dailyRun",
+                "state": 1,
+                "parentId": 23,
+                "lev": 2,
+                "url": "/race/dailyRun",
+                "title": "日常跑步训练",
+                "icon": "el-icon",
+                "hidden": null,
+                "path": "/race/dailyRun",
+                "children": [
+                    
+                ]
+            },
+            {
+                "id": 28,
+                "name": "gamePublish",
+                "state": 1,
+                "parentId": 23,
+                "lev": 2,
+                "url": "/race/gamePublish",
+                "title": "赛事发布",
+                "icon": "el-icon",
+                "hidden": null,
+                "path": "/race/gamePublish",
+                "children": [
+                    
+                ]
+            },
+            {
+                "id": 29,
+                "name": "gameCheck",
+                "state": 1,
+                "parentId": 23,
+                "lev": 2,
+                "url": "/race/gameCheck",
+                "title": "赛事审核",
+                "icon": "el-icon",
+                "hidden": null,
+                "path": "/race/gameCheck",
+                "children": [
+                    
+                ]
+            },
+            {
+                "id": 30,
+                "name": "gameEnroll",
+                "state": 1,
+                "parentId": 23,
+                "lev": 2,
+                "url": "/race/gameEnroll",
+                "title": "赛事报名",
+                "icon": "el-icon",
+                "hidden": null,
+                "path": "/race/gameEnroll",
+                "children": [
+                    
+                ]
+            }
+        ]
+    },
+    {
+        "id": 31,
+        "name": null,
+        "state": 1,
+        "parentId": null,
+        "lev": 1,
+        "url": null,
+        "title": "数据统计",
+        "icon": "el-icon",
+        "hidden": null,
+        "path": null,
+        "children": [
+            {
+                "id": 32,
+                "name": "roadCount",
+                "state": 1,
+                "parentId": 31,
+                "lev": 2,
+                "url": "/data/roadCount",
+                "title": "校园智道统计",
+                "icon": "el-icon",
+                "hidden": null,
+                "path": "/data/roadCount",
+                "children": [
+                    
+                ]
+            },
+            {
+                "id": 33,
+                "name": "roadAnalysis",
+                "state": 1,
+                "parentId": 31,
+                "lev": 2,
+                "url": "/data/roadAnalysis",
+                "title": "校园智道分析",
+                "icon": "el-icon",
+                "hidden": null,
+                "path": "/data/roadAnalysis",
+                "children": [
+                    
+                ]
+            },
+            {
+                "id": 34,
+                "name": "aiCount",
+                "state": 1,
+                "parentId": 31,
+                "lev": 2,
+                "url": "/data/aiCount",
+                "title": "AI体测统计",
+                "icon": "el-icon",
+                "hidden": null,
+                "path": "/data/aiCount",
+                "children": [
+                    
+                ]
+            },
+            {
+                "id": 35,
+                "name": "aiAnalysis",
+                "state": 1,
+                "parentId": 31,
+                "lev": 2,
+                "url": "/data/aiAnalysis",
+                "title": "AI体测分析",
+                "icon": "el-icon",
+                "hidden": null,
+                "path": "/data/aiAnalysis",
+                "children": [
+                    
+                ]
+            },
+            {
+                "id": 36,
+                "name": "runCount",
+                "state": 1,
+                "parentId": 31,
+                "lev": 2,
+                "url": "/data/runCount",
+                "title": "跑步记时统计",
+                "icon": "el-icon",
+                "hidden": null,
+                "path": "/data/runCount",
+                "children": [
+                    
+                ]
+            },
+            {
+                "id": 37,
+                "name": "runReport",
+                "state": 1,
+                "parentId": 31,
+                "lev": 2,
+                "url": "/data/runReport",
+                "title": "跑步记时报告",
+                "icon": "el-icon",
+                "hidden": null,
+                "path": "/data/runReport",
+                "children": [
+                    
+                ]
+            },
+            {
+                "id": 38,
+                "name": "attendanceCount",
+                "state": 1,
+                "parentId": 31,
+                "lev": 2,
+                "url": "/data/attendanceCount",
+                "title": "出勤统计",
+                "icon": "el-icon",
+                "hidden": null,
+                "path": "/data/attendanceCount",
+                "children": [
+                    
+                ]
+            }
+        ]
+    },
+    {
+        "id": 39,
+        "name": null,
+        "state": 1,
+        "parentId": null,
+        "lev": 1,
+        "url": null,
+        "title": "积分商城",
+        "icon": "el-icon",
+        "hidden": null,
+        "path": null,
+        "children": [
+            {
+                "id": 40,
+                "name": "exchangeRecord",
+                "state": 1,
+                "parentId": 39,
+                "lev": 2,
+                "url": "/mall/exchangeRecord",
+                "title": "商城维护",
+                "icon": "el-icon",
+                "hidden": null,
+                "path": "/mall/exchangeRecord",
+                "children": [
+                    
+                ]
+            },
+            {
+                "id": 41,
+                "name": "matiain",
+                "state": 1,
+                "parentId": 39,
+                "lev": 2,
+                "url": "/mall/matiain",
+                "title": "兑换记录",
+                "icon": "el-icon",
+                "hidden": null,
+                "path": "/mall/matiain",
+                "children": [
+                    
+                ]
+            }
+        ]
+    }
+]

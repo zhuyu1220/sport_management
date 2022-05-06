@@ -1,22 +1,99 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body>
-    <div></div>
-    <style>
-      div {
-        background: url("../../../src/assets/图层\ 14.png") center center;
-        background-size: cover;
-        background-repeat: no-repeat;
-        width: 300px;
-        height: 300px;
-        border-radius: 10px;
-        box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
-      }
-    </style>
-  </body>
-</html>
+<template>
+  <div>
+    <editor :id="tinymceId" :init="init"> </editor>
+  </div>
+</template>
+
+<script>
+  import tinymce from "tinymce/tinymce";
+  import Editor from "@tinymce/tinymce-vue";
+  import "tinymce/themes/silver";
+  // import 'tinymce/icons/default/icons.js'
+  import "tinymce/plugins/image";
+  import "tinymce/plugins/link";
+  import "tinymce/plugins/code";
+  import "tinymce/plugins/table";
+  import "tinymce/plugins/lists";
+  import "tinymce/plugins/contextmenu";
+  import "tinymce/plugins/wordcount";
+  import "tinymce/plugins/colorpicker";
+  import "tinymce/plugins/textcolor";
+
+  export default {
+    name: "RichText",
+    props: {
+      id: {
+        type: String,
+        default: function () {
+          return (
+            "vue-tinymce-" +
+            +new Date() +
+            ((Math.random() * 1000).toFixed(0) + "")
+          );
+        },
+      },
+      value: {
+        type: String,
+        default: "",
+      },
+    },
+    watch: {
+      value(val) {
+        if (!this.hasChange && this.hasInit) {
+          this.$nextTick(() =>
+            window.tinymce.get(this.tinymceId).setContent(val || "")
+          );
+        }
+      },
+    },
+    data() {
+      const _this = this;
+      return {
+        tinymceId: this.id,
+        hasInit: false,
+        hasChange: false,
+        init: {
+          language_url: "/static/tinymce/zh-Hans.js", // 语言包的路径
+          language: "zh-Hans", // 语言
+          skin_url: "/static/tinymce/skins/ui/oxide", // skin路径
+          height: 780, // 编辑器高度
+
+          // toolbar: ' undo redo |  bold italic underline strikethrough image',
+          branding: false, // 去水印
+          elementpath: true, // 禁用编辑器底部的状态栏
+          statusbar: true, // 隐藏编辑器底部的状态栏
+          paste_data_images: true, // 允许粘贴图像
+          menubar: true, // 隐藏最上方menu
+          plugins: "image link code table lists wordcount", // 图片插件
+          mages_upload_url: "", //上传图片地址
+          font_formats:
+            "微软雅黑=Microsoft YaHei,Helvetica Neue,PingFang SC,sans-serif;苹果苹方=PingFang SC,Microsoft YaHei,sans-serif;宋体=simsun,serif;仿宋体=FangSong,serif;黑体=SimHei,sans-serif;Arial=arial,helvetica,sans-serif;Arial Black=arial black,avant garde;Book Antiqua=book antiqua,palatino;",
+
+          images_upload_base_path: "/demo",
+          images_upload_handler: (blobInfo, success, failure) => {},
+          init_instance_callback: (editor) => {
+            if (_this.value) {
+              editor.setContent(_this.value);
+            }
+            _this.hasInit = true;
+            // 监听富文本内容的改变 将变化传回richtext的v-model
+            editor.on("NodeChange Change KeyUp SetContent", () => {
+              this.hasChange = true;
+              this.$emit("input", editor.getContent());
+            });
+          },
+        },
+      };
+    },
+    components: { Editor },
+    mounted() {
+      tinymce.init({});
+    },
+  };
+</script>
+
+<style>
+  .tox-tinymce-aux {
+    z-index: 5000 !important;
+  }
+</style>

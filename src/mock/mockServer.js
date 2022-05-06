@@ -2,8 +2,97 @@ import Mock from 'mockjs'
 // 导入mockjs 拦截ajax请求 生成模拟数据
 //Mock.mock(url,method,data)
 
+Mock.mock('/uploadExcel', 'post', () => {
+    console.log('ok');
+    
+    return {
+        code: 100,
+        msg:'成功',
+        data: {
+            token: "ajkdljakljsdklajsd245da435s4d",
+            userInfo: {
+                username:"王五"
+            }
+        }
+    }
+})
+
+// 分页获取教师账号列表
+Mock.mock('/queryTeacherByPage', 'post', () => { 
+    return {
+        code: 100,
+        msg:'成功',
+        data: [{
+            
+                id: 1,
+                state: 0,
+                no: 111,
+                name: '张三',
+                gender: "1",
+                height: "11",
+                weight: "22",
+                schoolCode: "1",
+                phone: "1566666",
+                pic: '22',
+                isRegiste: "",
+              
+        }, { 
+                id: 2,
+                state: 1,
+                no: 111,
+                name: '张三',
+                gender: "1",
+                height: "11",
+                weight: "22",
+                schoolCode: "1",
+                phone: "157777",
+            pic: {
+                    url:"blob:http://localhost:8080/cf98d9e6-b53f-4780-922a-0a2d251e91ce"
+                },
+                isRegiste: "",
+        }],
+        total:'20'
+    }
+})
+// 获取教师信息
+Mock.mock('/getTeacherById', 'post', () => { 
+    return {
+        code: 100,
+        msg:'成功',
+        data: {
+               
+                id: 1,
+                state: 0,
+                no: 111,
+                name: '张三',
+                gender: "1",
+                height: "11",
+                weight: "22",
+                schoolCode: "1",
+                phone: "1566666",
+                pic:[ {
+                url:"blob:http://localhost:8080/cf98d9e6-b53f-4780-922a-0a2d251e91ce"
+                }],
+                isRegiste: "",
+              
+        },
+        total:'20'
+    }
+})
+// 添加教师信息
+Mock.mock('/editTeacherInfo', 'post', () => { 
+    return {
+        code: 100,
+        msg:'成功',
+        data: {
+            
+        }
+    }
+})
 // 获取token 
 Mock.mock('/homepage/user/login', 'post', () => {
+    console.log('1111');
+    
     return {
         code: 100,
         msg:'成功',
@@ -22,6 +111,18 @@ Mock.mock('/getMenuByToken', 'get', () => {
         msg:'成功',
         data: {
             
+        }
+    }
+})
+import menu from '@/mock/menu'
+Mock.mock('/system/menu/getMenuListAll', 'get', () => {
+    console.log('后台菜单');
+    
+    return {
+        code: 100, 
+        msg: '成功',
+        data: {
+            menu
         }
     }
 })
@@ -354,7 +455,7 @@ Mock.mock('/getRoleById', 'post', (data) => {
     }
 })
 // 获取所有角色信息
-Mock.mock('/getAllRoles', 'get', (data) => {  
+Mock.mock('/system/Role/getAllroles', 'get', (data) => {  
     return {
         "code": "100",
         "data": [

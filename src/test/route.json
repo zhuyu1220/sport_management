@@ -64,11 +64,17 @@
                 "name":"teacherManage",
                 "url":"system/userManage/teacherManage"
             },{
-                "title":"访客管理",
+                "title":"访客添加",
                 "icon":"",
                 "path":"/system/userManage/vistorManage",
                 "name":"vistorManage",
                 "url":"/system/userManage/vistorManage"
+            },{
+                "title":"访客审核",
+                "icon":"",
+                "path": "/system/userManage/visitorCheck",
+                 "name": "visitorCheck",
+                 "url":"/system/userManage/visitorCheck"
             }
             ]
         },   {
@@ -168,31 +174,31 @@
         "title":"跑步项目",
         "icon":"el-icon",
         "path":"/race/project",
-        "name":"",
+        "name":"project",
         "url":"/race/project"
        } , {
         "title":"日常跑步训练",
         "icon":"el-icon",
         "path":"/race/dailyRun",
-        "name":"",
+        "name":"dailyRun",
         "url":"/race/dailyRun"
        } , {
         "title":"赛事发布",
         "icon":"el-icon",
         "path":"/race/gamePublish",
-        "name":"",
+        "name":"gamePublish",
         "url":"/race/gamePublish"
        } , {
         "title":"赛事审核",
         "icon":"el-icon",
         "path":"/race/gameCheck",
-        "name":"",
+        "name":"gameCheck",
         "url":"/race/gameCheck"
        } ,{
         "title":"赛事报名",
         "icon":"el-icon",
         "path":"/race/gameEnroll",
-        "name":"",
+        "name":"gameEnroll",
         "url":"/race/gameEnroll" 
        }
     ]
@@ -207,43 +213,43 @@
         "title":"校园智道统计",
         "icon":"el-icon",
         "path":"/data/roadCount",
-        "name":"wristband",
+        "name":"roadCount",
         "url":"/data/roadCount"
        } , {
         "title":"校园智道分析",
         "icon":"el-icon",
         "path":"/data/roadAnalysis",
-        "name":"order",
+        "name":"roadAnalysis",
         "url":"/data/roadAnalysis"
        } , {
         "title":"AI体侧统计",
         "icon":"el-icon",
         "path":"/data/aiCount",
-        "name":"",
+        "name":"aiCount",
         "url":"/data/aiCount"
        } , {
         "title":"AI体侧分析",
         "icon":"el-icon",
         "path":"/data/aiAnalysis",
-        "name":"",
+        "name":"aiAnalysis",
         "url":"/data/aiAnalysis"
        } , {
         "title":"跑步计时统计",
         "icon":"el-icon",
         "path":"/data/runCount",
-        "name":"",
+        "name":"runCount",
         "url":"/data/runCount"
        } , {
         "title":"跑步计时报告",
         "icon":"el-icon",
         "path":"/data/runReport",
-        "name":"",
+        "name":"runReport",
         "url":"/data/runReport"
        } ,{
         "title":"出勤统计",
         "icon":"el-icon",
         "path":"/data/attendanceCount",
-        "name":"",
+        "name":"attendanceCount",
         "url":"/data/attendanceCount" 
        }
     ]
@@ -258,13 +264,13 @@
         "title":"商城维护",
         "icon":"el-icon",
         "path":"/mall/exchangeRecord",
-        "name":"wristband",
+        "name":"exchangeRecord",
         "url":"/mall/exchangeRecord"
        } , {
         "title":"兑换记录",
         "icon":"el-icon",
         "path":"/mall/matiain",
-        "name":"order",
+        "name":"matiain",
         "url":"/mall/matiain"
        } 
     ]

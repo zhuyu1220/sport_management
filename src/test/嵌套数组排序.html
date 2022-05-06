@@ -1,0 +1,55 @@
+<!DOCTYPE >
+<html>
+  <script>
+    console.log(111);
+    let arr1 = [
+      { sort: 5, title: "e" },
+      {
+        sort: 1,
+        title: "a",
+        children: [
+          { sort: 2, title: "a2" },
+          { sort: 1, title: "a1" },
+          { sort: 3, title: "a1" },
+          {
+            sort: 4,
+            title: "a1",
+            children: [
+              { sort: 22, title: "a22" },
+              { sort: 11, title: "a11" },
+              { sort: 33, title: "a33" },
+              { sort: 44, title: "a44" },
+            ],
+          },
+        ],
+      },
+      {
+        sort: 3,
+        title: "c",
+        children: [
+          { sort: 2, title: "a2" },
+          { sort: 1, title: "a1" },
+          { sort: 3, title: "a1" },
+        ],
+      },
+      { sort: 2, title: "b" },
+
+      { sort: 4, title: "d" },
+    ];
+
+    arr1.forEach((item) => {
+      // 如果有children 则调用排序方法
+      if (item.children) {
+        item.children.sort(compare("sort"));
+      }
+    });
+    function compare(p) {
+      return function (m, n) {
+        let a = m[p];
+        let b = m[p];
+        return a - b;
+      };
+    }
+    //
+  </script>
+</html>

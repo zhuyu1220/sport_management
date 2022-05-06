@@ -1,46 +1,75 @@
 <template>
-  <div class="">
-
-    <el-card>
-      <el-form
-        label-width="40px"
-        label-position="left"
-        inline
-        style="display: flex"
+  <div class="wrapper">
+    <!-- 搜索开始 -->
+    <el-card shadow="never">
+      <i class="el-icon-search"></i>
+      <span>筛选搜索</span>
+      <el-button style="float: right" @click="handleSearchList" size="small"
+        >搜索</el-button
       >
-        <el-form-item label="姓名">
-          <el-input type="text" v-model="queryParams.name"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary">搜索</el-button>
-        </el-form-item>
-      </el-form>
+      <el-button
+        style="float: right; margin-right: 15px"
+        @click="handleResetSearch()"
+        size="small"
+      >
+        重置
+      </el-button>
+      <div style="margin-top: 15px">
+        <el-form size="small" label-width="140px" inline>
+          <el-form-item label="姓名">
+            <el-input type="text" v-model="queryParams.name"></el-input>
+          </el-form-item>
+        </el-form>
+      </div>
     </el-card>
-
-    <el-card>
-
-       <el-row :gutter="24" justify="end" align="middle" >
-        <el-col :span="8">
-        
-      <el-button type="success" @click="alertLotCheck(1)" :disabled="multipleSelection.length<1" icon="el-icon-s-check">批量通过</el-button>
-          <el-button type="warning" @click="alertLotCheck(0)"  :disabled="multipleSelection.length<1" icon="el-icon-s-check">批量拒绝</el-button>
-        </el-col>
-      
-      </el-row>
-
+    <!-- 搜索结束-->
+    <!-- 工具栏开始 -->
+    <el-card shadow="never" style="margin: 15px 0">
+      <i class="el-icon-tickets"></i>
+      <span>数据列表</span>
+      <div style="float: right; margin-right: 15px">
+        <el-button
+          type="success"
+          @click="batchPass(1)"
+          size="mini"
+          :disabled="multipleSelection.length < 1"
+          icon="el-icon-s-check"
+          >批量通过</el-button
+        >
+        <el-button
+          type="warning"
+          @click="batchPass(2)"
+          size="mini"
+          :disabled="multipleSelection.length < 1"
+          icon="el-icon-s-check"
+          >批量拒绝</el-button
+        >
+      </div>
     </el-card>
-
+    <!-- 工具栏结束 -->
     <el-table
+      v-loading="loading"
       :data="tableData"
+      border
       style="width: 100%"
       @selection-change="handleSelectionChange"
+      :headerCellStyle="{ background: '#C0C4CC' }"
+      :headerRowStyle="{ color: '#000' }"
     >
-      <el-table-column type="selection" width="55"> </el-table-column>
+      <el-table-column type="selection" width="55" />
+      <el-table-column type="index" label="序号" width="60px">
+      </el-table-column>
+
       <el-table-column prop="name" label="姓名" width="width">
       </el-table-column>
-      <el-table-column prop="gender" label="姓名" width="width">
-      </el-table-column>
-      <el-table-column prop="picId" label="照片" width="width">
+      <el-table-column label="照片" width="width">
+        <template scope="scope">
+          <el-image
+            style="width: 100px; height: 100px"
+            :src="scope.row.pic"
+            fit="contain "
+          ></el-image>
+        </template>
       </el-table-column>
       <el-table-column prop="height" label="身高" width="width">
       </el-table-column>
@@ -55,232 +84,140 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button type="text" @click="alertUpdate(scope.row.id)"
-            >详情</el-button
+          <el-button type="text" @click="batchPass(1, scope.row.id)"
+            >通过</el-button
+          >
+          <el-button type="text" @click="batchPass(2, scope.row.id)"
+            >拒绝</el-button
           >
         </template>
       </el-table-column>
     </el-table>
 
-    <el-row type="flex" justify="end" :gutter="12">
-      <el-col :span="6">
-        <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="queryParams.currentPage"
-          :page-sizes="[10, 20, 30, 40]"
-          :page-size="10"
-          layout=" sizes, prev, pager, next, jumper,total"
-          :total="total"
-        >
-        </el-pagination>
-      </el-col>
-
-    </el-row>
-
-    <el-dialog
-      :title="staticUserForm.title"
-      :visible.sync="formDialogVisible"
-      width="width"
-    >
-      <el-form
-        label-width="100px"
-        label-position="left"
-        :model="userForm"
-        ref="userform"
-        :rules="formRules"
+    <div style="float: right">
+      <el-pagination
+        background
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="queryParams.currentPage"
+        :page-sizes="[5, 10, 15]"
+        :page-size="10"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
       >
-        <el-form-item label="姓名" prop="name">
-          <el-input v-model="userForm.name"></el-input>
-        </el-form-item>
-        <el-form-item label="性别">
-          <el-radio v-model="userForm.gender" label="1">男</el-radio>
-          <el-radio v-model="userForm.gender" label="0">女</el-radio>
-        </el-form-item>
-        <el-form-item label="照片上传">
-          <div class="avatar-uploader">
-            <el-upload
-              action="https://jsonplaceholder.typicode.com/posts/"
-              list-type="picture-card"
-              :on-success="handleAvatarSuccess"
-            >
-              <i class="el-icon-plus"></i>
-            </el-upload>
-          </div>
-        </el-form-item>
-        <el-form-item label="联系方式">
-          <el-input v-model="userForm.phone"></el-input>
-        </el-form-item>
-        <el-form-item label="身高">
-          <el-input v-model="userForm.name"></el-input>
-        </el-form-item>
-        <el-form-item label="体重">
-          <el-input v-model="userForm.account"></el-input>
-        </el-form-item>
-        <el-form-item label="学校">
-          <el-select
-            v-model="userForm.schoolCode"
-            placeholder="学校"
-          >
-            <el-option
-              :label="item.name"
-              :value="item.code"
-               v-for="(item, index) in schoolList"
-              :key="index"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer">
-        <el-button @click="formDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="reqSubmitUserForm">确 定</el-button>
-      </div>
-    </el-dialog>
+      </el-pagination>
+    </div>
   </div>
 </template>
 
 <script>
-import {
-  queryVistorByPage,
-  getVistroById,
-    checkVistorInfo,
-} from "@/api/index.js";
+import { checkVistorInfo, queryVisitorByPage } from "@/api/index.js";
 export default {
   data() {
     return {
+      loading: false,
+
       multipleSelection: [],
-      staticUserForm: {
-        title: "增加",
-      },
-      formDialogVisible: false,
-      schoolList: [],
-      userInfo: {},
-      userForm: {
-        ope: 1,
-        id: "",
-        state: 0,
-        isRegiste: "",
-        name: "",
-        gender: "1",
-        height: "",
-        weight: "",
-        phone: "",
-        picId: "",
-        schoolCode: "",
-      },
-      tableData: [
-        {
-          classCode: "3",
-          ctime: "2022-04-12 17:44:22",
-          gender: "1-男，0-女，2-未知",
-          gradeCode: "2",
-          height: "170",
-          id: "1",
-          isRegiste: "1-已上传，0-未上传",
-          name: "钱敬冬",
-          no: "20220412",
-          ope: "1-新增;2-修改;0-删除",
-          phone1: "",
-          phone2: "",
-          phone3: "",
-          picId: "",
-          schoolCode: "1",
-          state: "1",
-          weight: "60",
-        },
-      ],
+      tableData: [],
+
+      // 查询账号所需参数
       queryParams: {
         currentPage: 1,
         pageSize: 10,
         name: "",
       },
-      formRules: {
-        no: [{ required: true, message: "请输入", trigger: "blur" }],
-        name: [{ required: true, message: "请输入", trigger: "blur" }],
-        height: [{ required: true, message: "请输入", trigger: "blur" }],
-        weight: [{ required: true, message: "请输入", trigger: "blur" }],
-      },
-      total: 1,
+      total: 0,
     };
   },
   methods: {
-    alertUpdate() {
-      this.staticUserForm = {
-        title: "访客详情",
-      };
-      this.formDialogVisible = true;
-      // 将查询到的数据回显
-      const res = this.getVistroById();
+    //批量审核 + 单个审核
+    async batchPass(ope, id) {
+      let ids = [];
+      // 判断是批量操作还是单个操作
+      if (id) {
+        ids.push(id);
+      } else {
+        this.multipleSelection.forEach((item) => {
+          ids.push(item.id);
+        });
+      }
+      const res = await checkVistorInfo({ ids, ope });
       if (res.data.code == 100) {
-        Object.assign(this.userForm, res.data.data);
+        this.$message({
+          type: "success",
+          message: "操作成功",
+        });
+        this.reqQueryByPages();
       }
     },
-    // 分页查询
-    async reqQueryStudentByPage() {
-      const res = await queryVistorByPage(this.queryParams);
-      this.total = res.data.dataSize;
-      this.tableData = res.data.data;
-    },
-    reqSubmitUserForm() {
-       this.formDialogVisible = true
-    },
-   async reqCheckUserInfo() {
-      const res = checkVistorInfo(this.checkInfo);
-      if(res.data.code ==100){
-        this.reqQueryStudentByPage()
-      }
-    },
-    alertLotCheck(ope){
-       this.checkInfo.ope = ope
-       let ids = []
-       this.multipleSelection.forEach(item=>{
-         ids.push(item.id)
-       })
-      this.checkInfo.ids =ids
-      this.reqCheckUserInfo()
-
-    },
+    // 将表格多选的值 赋值给multipleSelection
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
+    // 修改每页展示条数
     handleSizeChange(val) {
+      this.queryParams.currentPage = 1;
       this.queryParams.pageSize = val;
-      this.reqQueryStudentByPage();
+      this.reqQueryByPages();
     },
+    // 修改页码
     handleCurrentChange(val) {
+      this.queryParams.currentPage = 1;
       this.queryParams.currentPage = val;
-      this.reqQueryStudentByPage();
+      this.reqQueryByPages();
+    },
+    // 条件查询初始化  将分页查询中的条件置空
+    handleResetSearch() {
+      this.queryParams.name = "";
+    },
+    //点击查询按钮 发送分页查询请求
+    handleSearchList() {
+      this.queryParams.currentPage = 1;
+      this.reqQueryByPages();
+    },
+    //表单信息初始化
+    resetForm() {
+      this.form = {
+        ope: 1,
+        id: "",
+        state: 0,
+        no: "",
+        name: "",
+        gender: "1",
+        height: "",
+        weight: "",
+        schoolCode: "",
+        phone: "",
+        pic: [],
+        isRegiste: "",
+      };
+    },
+    // 分页+条件查询
+    async reqQueryByPages() {
+      this.loading = true;
+      try {
+        const res = await queryVisitorByPage(this.queryParams);
+        if (res.data.code == 100) {
+          this.tableData = res.data.data;
+          this.total = +res.data.dataTotal;
+          this.loading = false;
+        }
+      } catch (err) {
+        console.log(err);
+        this.loading = false;
+      }
     },
   },
   mounted() {
-    this.reqQueryStudentByPage();
-    this.reqGetOrgByParentId(-1);
+    this.reqQueryByPages();
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.avatar-uploader::v-deep .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-.avatar-uploader::v-deep .el-upload:hover {
-  border-color: #409eff;
-}
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  line-height: 178px;
-  text-align: center;
-}
-.avatar {
-  width: 178px;
-  height: 178px;
-  display: block;
+.el-table__heade::v-deep .tableHeader {
+  color: red;
+  background-color: #fff;
 }
 </style>
+>

@@ -1,17 +1,18 @@
 <template>
   <div class="">
 
-    <el-card>
-      <el-form
-        label-width="70px"
-        label-position="left"
-        inline
-        style="display: flex"
-      >
-        <el-form-item label="手环号">
+    <el-card shadow="never">
+       <i class="el-icon-search"></i>
+          <span>筛选搜索</span>
+            <el-button style="float:right" @click="handleSearchList" size="small">搜索</el-button>
+            <el-button style="float:right;margin-right:15px"  @click="handleResetSearch()" size="small">
+              重置
+            </el-button>
+            <div style="margin-top:15px">
+              <el-form   size="small" label-width="140px" inline>
+            <el-form-item label="手环号">
           <el-input type="text" v-model="queryParams.no"></el-input>
         </el-form-item>
-        
         <el-form-item label="手环状态">
             <el-select v-model="queryParams.state" placeholder="">
             <el-option
@@ -22,28 +23,28 @@
             >
             </el-option>
           </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="reqQueryByPage">搜索</el-button>
-        </el-form-item>
-      </el-form>
+        </el-form-item> 
+        </el-form>
+        </div>
     </el-card>
 
-    <el-card>
-
-      <el-row :gutter="24" justify="end" align="middle">
-        <el-col :span="8">
-          <el-button type="primary" @click="alertAdd">添加</el-button>
-          <el-button type="primary" icon="el-icon-document">批量导入</el-button>
-        </el-col>
-      </el-row>
-
+     <el-card shadow="never" style="margin:15px 0;">
+          <i class="el-icon-tickets"></i>
+      <span>数据列表</span>
+        <div style="float:right;margin-right:15px">
+           <el-button type="primary"  @click="excelDialogVisible = true"  size="mini"  icon="">批量导入</el-button>
+        
+          <el-button size='mini' @click="alertAdd">添加</el-button>
+        </div>
     </el-card>
 
     <el-table
       :data="tableData"
+       v-loading="loading"
       style="width: 100%"
       @selection-change="handleSelectionChange"
+         :headerCellStyle="{ background: '#C0C4CC' }"
+      :headerRowStyle="{ color: '#000' }"
     >
       <el-table-column type="selection" width="55"> </el-table-column>
       <el-table-column prop="no" label="手环号" width="width">
@@ -85,7 +86,7 @@
 
     <el-dialog
       :title="staticForm.title"
-      :visible.sync="formDialogVisible"
+      :visible.sync="formDialog"
       width="width"
     >
       <el-form
@@ -105,10 +106,35 @@
      
       </el-form>
       <div slot="footer">
-        <el-button @click="formDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="reqSubmitForm">确 定</el-button>
+        <el-button @click="formDialog = false">取 消</el-button>
+        <el-button type="primary" @click="reqEditInfo()">确 定</el-button>
       </div>
     </el-dialog>
+     <!-- 上传excel -->
+           <el-dialog
+             title="批量上传"
+             :visible.sync="excelDialogVisible"
+             width="width"
+            >
+             <div>
+               <el-upload
+               ref="uploadExcel"
+                action=""
+                :limit="1"
+                :http-request="batchUpload"
+                  accept=".xls,.xlsx,"
+                >
+      <el-button size="small" type="primary">点击上传</el-button>
+     <div slot="tip" class="el-upload__tip">一次只能上传一个xls/xlsx文件，且不超过10M</div>
+  
+     </el-upload>
+             </div>
+             <div slot="footer">
+               <el-button @click="excelDialogVisible = false">取 消</el-button>
+               <el-button type="primary" @click="excelDialogVisible = false">确 定</el-button>
+             </div>
+           </el-dialog>
+         <!-- 上传excel -->
   </div>
 </template>
 
@@ -133,8 +159,9 @@ export default {
       staticUserForm: {
         title: "增加",
       },
-      formDialogVisible: false,
-      userInfo: {},
+      loading: false,
+      formDialog: false,
+     excelDialogVisible:false,
    
       staticForm:{
         title:'添加'
@@ -176,7 +203,7 @@ export default {
         cancelButtonText: "取消",
         type: "warning",
       }).then(async () => {
-        const res = await editStudentInfo({ id, ope: 0 });
+        const res = await editWristbandInfo({ id, ope: 0 });
         if (res.data.code == 100) {
           this.$message({
             type: "success",
@@ -186,61 +213,99 @@ export default {
         }
       });
     },
-    alertUpdate() {
+        // 条件查询初始化  将分页查询中的条件置空
+    handleResetSearch(){
+        this.queryParams.no =''
+          this.queryParams.state =''
+    },
+    async alertUpdate(id) {
       this.staticForm = {
         title: "修改",
       };
-      this.formDialogVisible = true;
-      // 将查询到的数据回显
-      const res = this.getWristBandById();
-      if (res.data.code == 100) {
-        Object.assign(this.form, res.data.data);
-        this.form.ope = 1;
+         this.formDialog = true;
+      if(id) {
+        try {
+          const res = await getWristBandById({ id });
+          if (res) {
+            Object.assign(this.form, res.data.data);
+            this.form.ope = 2;
+            this.formDialog = true;
+             this.$nextTick(() => {
+               this.$refs['form'].clearValidate()
+             })
+          }
+        } catch (error) {
+          this.formDialog = true;
+        }
       }
     },
-    alertAdd() {
-      this.staticForm = {
-        title: "增加",
-      };
-      this.userForm = {
+    resetForm(){
+      this.form = {
         ope: 1,
         id: "",
         state: 1,
         no:''
       };
+    },
+    alertAdd() {
+      this.resetForm()
+        this.staticForm = {
+        title: "增加",
+      };
+      this.formDialog = true;
+      this.$nextTick(() => {
+        this.$refs['form'].clearValidate()
+      })
 
-      this.formDialogVisible = true;
+      
     },
     // 分页查询
     async reqQueryByPage() {
-      const res = await queryWristbandByPage(this.queryParams);
-      this.total = res.data.dataSize;
-      this.tableData = res.data.data;
+      this.loading = true;
+      try {
+        const res = await queryWristbandByPage(this.queryParams);
+        if (res.data.code == 100) {
+          this.tableData = res.data.data;
+          this.total = +res.data.dataTotal;
+          this.loading = false;
+        }
+      } catch (err) {
+        console.log(err);
+        this.loading = false;
+      }
     },
-    async reqSubmitForm() {
+       //添加信息 修改信息 请求
+    reqEditInfo() {
       this.$refs.form.validate(async (valid) => {
         if (valid) {
+   
           const res = await editWristbandInfo(this.form);
           if (res.data.code == 100) {
             this.$message({
               type: "success",
               message: "操作成功",
             });
-            this.reqQueryByPage();
+            this.$refs.form.resetFields()
+            this.formDialog = false;
           }
+          this.reqQueryByPages();
         }
       });
-    },    
+    }, 
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
+     // 修改每页展示条数
     handleSizeChange(val) {
+      this.queryParams.currentPage = 1;
       this.queryParams.pageSize = val;
-      this.reqQueryByPage();
+      this.reqQueryByPages();
     },
+    // 修改页码
     handleCurrentChange(val) {
+      this.queryParams.currentPage = 1;
       this.queryParams.currentPage = val;
-      this.reqQueryByPage();
+      this.reqQueryByPages();
     },
   },
   mounted() {

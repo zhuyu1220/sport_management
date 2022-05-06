@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      let menus = [
+        {
+          name: "accountMangae",
+        },
+        {
+          name: "menuManage",
+        },
+        {
+          name: "organizationManage",
+        },
+        {
+          name: "roleManage",
+        },
+        {
+          name: "studentManage",
+        },
+        {
+          name: "teacherManage",
+        },
+        {
+          name: "visitorManage",
+        },
+        {
+          name: "visitorCheck",
+        },
+        {
+          name: "gradeManage",
+        },
+        {
+          name: "pointRule",
+        },
+        {
+          name: "campusPublish",
+        },
+        {
+          name: "campusCheck",
+        },
+        {
+          name: "campusPublish",
+        },
+        {
+          name: "largeScreenPublish",
+        },
+        {
+          name: "wristband",
+        },
+        {
+          name: "order",
+        },
+        {
+          name: "raceProject",
+        },
+        {
+          name: "dailyRun",
+        },
+      ];
+      let asyncRouterMap = [
+        {
+          path: "/",
+          component: () => import("@/layout/index.vue"),
+          children: [
+            // 系统管理开始
+            {
+              path: "/system/authorization/accountMangae",
+              name: "accountMangae",
+              component: () =>
+                import("@/views/system/authorization/accountMangae"),
+              meta: { title: "账号管理" },
+            },
+            {
+              path: "/system/authorization/menuManage",
+              name: "menuManage",
+              component: () =>
+                import("@/views/system/authorization/menuManage"),
+              meta: { title: "菜单管理" },
+            },
+            {
+              path: "/system/authorization/organizationManage",
+              name: "organizationManage",
+              component: () =>
+                import("@/views/system/authorization/organizationManage"),
+              meta: { title: "组织管理" },
+            },
+            {
+              path: "/system/authorization/roleManage",
+              name: "roleManage",
+              component: () =>
+                import("@/views/system/authorization/roleManage"),
+              meta: { title: "角色管理" },
+            },
+            {
+              path: "/system/userManage/studentManage",
+              name: "studentManage",
+              component: () =>
+                import("@/views/system/userManage/studentManage"),
+              meta: { title: "学生管理" },
+            },
+            {
+              path: "/system/userManage/teacherManage",
+              name: "teacherManage",
+              component: () =>
+                import("@/views/system/userManage/teacherManage"),
+              meta: { title: "教师管理" },
+            },
+            {
+              path: "/system/userManage/visitorManage",
+              name: "visitorManage",
+              component: () =>
+                import("@/views/system/userManage/visitorManage"),
+              meta: { title: "访客添加" },
+            },
+            {
+              path: "/system/userManage/visitorCheck",
+
+              name: "visitorCheck",
+              component: () => import("@/views/system/userManage/visitorCheck"),
+              meta: { title: "访客审核" },
+            },
+            {
+              path: "/system/baseMantain/gradeManage",
+              name: "gradeManage",
+              component: () => import("@/views/system/baseMantain/gradeManage"),
+              meta: { title: "等级管理" },
+            },
+            {
+              path: "/system/baseMantain/pointRule",
+              name: "pointRule",
+              component: () => import("@/views/system/baseMantain/pointRule"),
+              meta: { title: "积分维护" },
+            },
+            // 系统管理结束
+            // 校园天地开始
+            {
+              path: "/school/campus/publish",
+              name: "campusPublish",
+              component: () => import("@/views/school/campus/publish"),
+              meta: { title: "校园信息发布" },
+            },
+            {
+              path: "/school/campus/check",
+              name: "campusCheck",
+              component: () => import("@/views/school/campus/check"),
+              meta: { title: "校园信息审核" },
+            },
+            {
+              path: "/school/largeScreen/publish",
+              name: "largeScreenPublish",
+              component: () => import("@/views/school/largeScreen/publish"),
+              meta: { title: "大屏信息发布" },
+            },
+            {
+              path: "/school/largeScreen/check",
+              name: "largeScreenCheck",
+              component: () => import("@/views/school/largeScreen/check"),
+              meta: { title: "大屏信息审核" },
+            },
+            // 校园天地结束
+            // 跑步计时开始
+            {
+              path: "/race/wristband",
+              name: "wristband",
+              component: () => import("@/views/race/wristband"),
+              meta: { title: "手环登记" },
+            },
+            {
+              path: "/race/order",
+              name: "order",
+              component: () => import("@/views/race/order"),
+              meta: { title: "发令账号" },
+            },
+            {
+              path: "/race/project",
+              name: "raceProject",
+              component: () => import("@/views/race/project"),
+              meta: { title: "跑步项目" },
+            },
+            {
+              path: "/race/dailyRun",
+              name: "dailyRun",
+              component: () => import("@/views/race/dailyRun"),
+              meta: { title: "日常跑步训练" },
+            },
+            {
+              path: "/race/gamePublish",
+              name: "gamePublish",
+              component: () => import("@/views/race/gamePublish"),
+              meta: { title: "赛事发布" },
+            },
+            {
+              path: "/race/gameCheck",
+              name: "gameCheck",
+              component: () => import("@/views/race/gameCheck"),
+              meta: { title: "赛事审核" },
+            },
+            {
+              path: "/race/gameEnroll",
+              name: "gameEnroll",
+              component: () => import("@/views/race/gameEnroll"),
+              meta: { title: "赛事报名" },
+            },
+
+            //跑步计时结束
+            // 数据统计开始
+            {
+              path: "/data/roadCount",
+              name: "wristband",
+              component: () => import("@/views/data/roadCount"),
+            },
+            {
+              path: "/data/roadAnalysis",
+              name: "order",
+              component: () => import("@/views/data/roadAnalysis"),
+            },
+            {
+              path: "/data/aiCount",
+              name: "aiCount",
+              component: () => import("@/views/data/aiCount"),
+            },
+            {
+              path: "/data/aiAnalysis",
+              name: "aiAnalysis",
+              component: () => import("@/views/data/aiAnalysis"),
+            },
+            {
+              path: "/data/runCount",
+              name: "runCount",
+              component: () => import("@/views/data/runCount"),
+            },
+            {
+              path: "/data/runReport",
+              name: "runReport",
+              component: () => import("@/views/data/runReport"),
+            },
+            {
+              path: "/data/attendanceCount",
+              name: "attendanceCount",
+              component: () => import("@/views/data/attendanceCount"),
+            },
+            // 数据统计结束
+            { path: "*", redirect: "/404", hidden: true },
+          ],
+        },
+      ];
+
+      function generateAsyncRoute(menus, asyncRouterMap) {
+        let asyncRouter = {
+          path: "/",
+          component: () => import("@/layout/index.vue"),
+          children: [],
+        };
+
+        asyncRouterMap[0].children.forEach((item) => {
+          if (item.hidden) {
+            asyncRouter.children.push(item);
+          } else {
+            let res = menus.find((menu) => item.name == menu.name);
+            if (res) {
+              asyncRouter.children.push(item);
+            }
+          }
+        });
+        console.log(asyncRouter);
+      }
+      generateAsync(menus, asyncRouterMap);
+    </script>
+  </body>
+</html>

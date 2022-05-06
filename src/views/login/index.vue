@@ -31,18 +31,7 @@
               v-model="loginForm.password"
               autocomplete="off"
             ><i slot='prefix'> <img src="@/assets/mima.png"></i></el-input>
-          </el-form-item>
-           <!-- <el-form-item label="" prop="checkPass">
-            <el-input
-               placeholder="输入验证码"
-              type="text"
-              v-model="loginForm.password"
-              autocomplete="off"
-            >
-               <i slot='prefix'> <img src="@/assets/yanzheng.png"></i>
-            </el-input>
-          </el-form-item> -->
-          
+          </el-form-item>   
           <el-form-item>
                 <el-button type="primary"  @click="login">进入系统</el-button>
           </el-form-item>
@@ -55,7 +44,7 @@
 </template>
 
 <script>
- import { login } from '@/api'
+ import { getMenuListAll } from '@/api'
 export default {
   data() {
     return {
@@ -69,10 +58,14 @@ export default {
   methods: {
     async login() {
       try {
-          this.$store.dispatch("user/userLogin", this.loginForm).then((data)=>{
-           this.$router.push("/home").catch(error=>{
+          this.$store.dispatch("user/userLogin", this.loginForm).then(()=>{
+                // 生成动态路由
+                  this.$store.dispatch("permission/generateRoutes")
+                  // 生成菜单
+                  this.$store.dispatch("permission/generateLeftMenu")
+             this.$router.push("/home").catch(error=>{
                   console.log(error,1111);     
-               });
+            });
           })
       } catch (error) {
         console.log(error);

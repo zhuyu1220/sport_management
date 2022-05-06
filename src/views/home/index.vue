@@ -43,8 +43,8 @@ import {getWeather,getModules,getEquStatus} from '@/api/index.js'
 export default {
   data(){
     return{
-      weather:null,
-      modules:[],
+      weather:true,
+      modules:['1','2','3'],
       equStatus:[]
     }
   },
@@ -79,8 +79,8 @@ export default {
    
   },
  async  mounted(){
-   this.reqGetWeather()
-   this.reqGetModules()
+  //  this.reqGetWeather()
+  //  this.reqGetModules()
  
    }
 }

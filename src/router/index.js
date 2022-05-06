@@ -5,14 +5,11 @@ import store from "@/store";
 // import Login from '@/views/Login'
 Vue.use(VueRouter);
 
-const routes = [
+export const constantRouterMap = [
   {
     path: "/login",
     component: () => import("@/views/login/index"),
-  },
-  {
-      path: '*',
-      redirect: '/404'
+    hidden:true
   },
   {
     path: "/",
@@ -28,24 +25,33 @@ const routes = [
         path: "trackSystem",
         name: "trackSystem",
         component: () => import("@/views/home/trackSystem"),
+        hidden:true
       },
       {
         path: "timingSystem",
         name: "timingSystem",
         component: () => import("@/views/home/timingSystem"),
+        hidden:true
       },
       {
         path: "aiTestSystem",
         name: "aiTestSystem",
         component: () => import("@/views/home/aiTestSystem"),
+        hidden:true
       },
-
+    
     ],
   },
-  
+  {
+    path: '*',
+    redirect: '/404',
+    hidden: true
+  },
 ];
+// 异步路由 根据后端返回的菜单 过滤出符合条件的路由  注意始终做的是菜单的权限而非是路由的权限
+// 菜单直接返回给我了   动态路由我自己再根据菜单筛一下
 
-const asyncRoutes = [
+export const asyncRouterMap = [
    {
     path: '/',
     component: () => import("@/layout/index.vue"),
@@ -102,13 +108,13 @@ const asyncRoutes = [
       },
       {
         path: "/system/baseMantain/gradeManage",
-        name: "visitorManage",
+        name: "gradeManage",
         component: () => import("@/views/system/baseMantain/gradeManage"),
         meta: {title:"等级管理"}
       },
       {
         path:  "/system/baseMantain/pointRule",
-        name: "visitorManage",
+        name: "pointRule",
         component: () => import("@/views/system/baseMantain/pointRule"),
         meta: {title:"积分维护"}
       },
@@ -134,7 +140,7 @@ const asyncRoutes = [
       },
       {
         path:  "/school/largeScreen/check",
-        name: "visitorManage",
+        name: "largeScreenCheck",
         component: () => import("@/views/school/largeScreen/check"),
         meta: {title:"大屏信息审核"}
       },
@@ -154,15 +160,34 @@ const asyncRoutes = [
       },
       {
         path:  "/race/project",
-        name: "project",
+        name: "raceProject",
         component: () => import("@/views/race/project"),
         meta: {title:"跑步项目"}
+      },
+      {
+        path:  "/race/project",
+        name: "raceProject",
+        component: () => import("@/views/race/project"),
+        meta: { title: "跑步项目" },
+        hidden:true
       },
       {
         path:  "/race/dailyRun",
         name: "dailyRun",
         component: () => import("@/views/race/dailyRun"),
         meta: {title:"日常跑步训练"}
+      },
+      {
+        path: '/race/projectDetail/:id',
+        name: "",
+        component: () => import("@/views/race/dailyRun/ProjectDetail"),
+        meta: {title:"日常训练项目"}
+      },
+      {
+        path: '/race/eventDetail/:id',
+        name: "",
+        component: () => import("@/views/race/gamePublish/ProjectDetail"),
+        meta: {title:"赛事项目"}
       },
       {
         path:  "/race/gamePublish",
@@ -182,47 +207,59 @@ const asyncRoutes = [
         component: () => import("@/views/race/gameEnroll"),
         meta: {title:"赛事报名"}
       },
-    
-    
+      {
+        path:  "/race/gameEnroll",
+        name: "gameEnroll",
+        component: () => import("@/views/race/gameEnroll"),
+        meta: {title:"项目报名"}
+      },
+      {
+        path:  "/race/gameEnroll/participant/:id",
+        name: "gameEnroll",
+        component: () => import("@/views/race/gameEnroll/Participant"),
+        meta: {title:"赛事报名"}
+      },
       //跑步计时结束
       // 数据统计开始
       {
-        "path":"/data/roadCount",
-        "name":"wristband",
-         component: () => import("@/views/data/roadCount"),
+        path:"/data/roadCount",
+        name:"wristband",
+        component: () => import("@/views/data/roadCount"),
        } , {
         "path":"/data/roadAnalysis",
         "name":"order",
         component: () => import("@/views/data/roadAnalysis"),
        } , {
         "path":"/data/aiCount",
-        "name": "",
+        "name": "aiCount",
          component: () => import("@/views/data/aiCount"),
        } , {
         "path":"/data/aiAnalysis",
-        "name":"",
+        "name":"aiAnalysis",
         component: () => import("@/views/data/aiAnalysis"),
        } , {
          "path":"/data/runCount",
-         "name":"",
+         "name":"runCount",
          component: () => import("@/views/data/runCount"),
        } , {
   
         "path":"/data/runReport",
-        "name":"",
+        "name":"runReport",
         component: () => import("@/views/data/runReport"),
        } ,{
         "path":"/data/attendanceCount",
-        "name":"",
+        "name":"attendanceCount",
         component: () => import("@/views/data/attendanceCount")
-      }
+      },
       // 数据统计结束
+      {path: '*', redirect: '/404', hidden: true}
     ]
   }
 ]
 
 const router = new VueRouter({
-  routes:[...routes,...asyncRoutes]
+  scrollBehavior: () => ({y: 0}),
+  routes:[...constantRouterMap,...asyncRouterMap]
 });
 
 

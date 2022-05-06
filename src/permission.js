@@ -12,12 +12,11 @@ const whiteList = ['/login']
 router.beforeEach(async (to, from, next) => {
     NProgress.start()
     document.title = getPageTitle(to.meta.title)
-    console.log('获取token之前');
+
     
     const token = localStorage.getItem('TOKEN')
     if (token) {
-        console.log('token有咯');
-        // 登录了  跳转登录页面 的话就帮你 重定向到首页
+        // 登录了  跳转登录页面 的话就 重定向到首页
         if (to.path =='/login') {
             next( '/home' )
             NProgress.done()

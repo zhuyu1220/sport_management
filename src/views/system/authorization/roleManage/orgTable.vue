@@ -1,10 +1,15 @@
 <template>
   <div>
-     <el-card>
-        <el-button type="primary" @click="goback()">返回</el-button>
+     <el-card shadow="never" style="margin:15px 0">
+         <i class="el-icon-tickets"></i>
+        <span>数据列表</span>
+          <div style="float:right">
+        <el-button type="primary" size="mini" @click="goback()">返回学校</el-button>
+        </div>
      </el-card>
       <el-table
           :data="org"
+          v-loading="loading"
           style="width: 100%">
           <el-table-column
               prop="code"
@@ -41,7 +46,7 @@
                   width="200"
                   trigger="click"
                 >
-                  <el-table :data="rolesAboutOrg" style="width: 100%">
+                  <el-table v-loading="roleLoading" :data="rolesAboutOrg" style="width: 100%">
                     <el-table-column prop="name" label="角色名称" width="width">
                     </el-table-column>
                     
@@ -57,10 +62,11 @@
                             })
                           "
                         >
-                          <el-button slot="reference" size="mini" type="danger"
+                          <el-button slot="reference" size="mini" type="text"
                             >删除</el-button
                           >
                         </el-popconfirm>
+                         <el-button size="mini" type="text">关联账号</el-button>
                       </template>
                     </el-table-column>
                   </el-table>
@@ -79,9 +85,10 @@
       :visible.sync="authRoleDialogVisible"
       width="width"
     >
-      <el-form :model="roleForm" ref="roleForm" :rules="rulesRoleForm">
-        <el-form-item label="角色" prop="roleId">
-          <el-select multiple v-model="roleForm.roleId" placeholder="">
+   
+      <el-form :model="roleForm" ref="roleForm" :rules="ruleForm">
+        <el-form-item label="角色" prop="roleId" >
+          <el-select multiple v-model="roleForm.roleId"  placeholder="">
             <el-option
               v-for="item in roles"
               :key="item.id"
@@ -110,9 +117,12 @@ export default {
     name:'orgTable',
   data(){
       return{
+      loading: false,
+      roleLoading:false,
       staticRoleForm: {
         title: "添加角色",
       },
+      ruleForm:{ roleId:[{required:true,message:'请选择角色',trigger:'change'}]},
       roleForm: {
         roleId: [],
         orgCode: "",
@@ -150,9 +160,19 @@ export default {
       this.authRoleDialogVisible = true;
     },
     async reqGetOrgByParentId(parentId) {
+      this.loading = true;
       this.parentId = parentId;
-      const res = await getOrgByParentId({ parentId });
-       this.org = res.data.data;
+       try { 
+         const res = await getOrgByParentId({ parentId });
+        if (res.data.code == 100) {
+          this.org = res.data.data;
+          this.loading = false;
+        } else {
+          this.loading = false;
+        }
+      } catch (err) {
+        this.loading = false;
+      }
     },
      reqRoleOrgLinkInfo() {
       this.$refs.roleForm.validate(async (valid) => {
@@ -180,12 +200,21 @@ export default {
       });
     },
     async reqGetRolesByOrgId(orgId) {
+      this.roleLoading =true
       const res = await getRolesByOrgId({ val: orgId });
-      if (res.data.code == 100) {
-        this.rolesAboutOrg = res.data.data;
-      }else{
-        this.rolesAboutOrg = []
+      try {
+         this.rolesAboutOrg = res.data.data;
+        if (res.data.code == 100) {
+          this.rolesAboutOrg = res.data.data;
+           this.roleLoading = false;
+        } else {
+           this.rolesAboutOrg = []
+           this.roleLoading = false;
+        }
+      } catch (err) {
+         this.roleLoading = false;
       }
+   
     },
     queryLower(id){
       if(this.curOrgLev<4){

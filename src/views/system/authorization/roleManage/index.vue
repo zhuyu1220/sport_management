@@ -1,8 +1,20 @@
 <template>
   <div>
-    <el-button type="primary" @click="alertAddRole()">添加角色</el-button>
-    <el-table :data="allRolesTable" style="width: 100%">
-      <el-table-column prop="name" label="角色名称" width="width">
+    <el-card  shadow="never" style="margin-bottom:15px">
+         <i class="el-icon-tickets"></i>
+        <span>数据列表</span>
+         <div style="float:right">
+         <el-button type="primary" size="mini" @click="alertAddRole()">添加角色</el-button>
+           </div>
+    </el-card>
+    <el-table   v-loading="loading" :data="allRolesTable" style="width: 100%">
+      <el-table-column
+        header-align="center"
+    
+         type="index"
+        label="序号" >
+      </el-table-column>
+      <el-table-column prop="name" align="center"    label="角色名称" width="width">
       </el-table-column>
       <el-table-column label="操作" width="width">
         <template slot-scope="scope">
@@ -18,6 +30,12 @@
             @click="alertEditRole({ id: scope.row.id })"
             >编辑</el-button
           >
+           <!-- <el-button
+            plain
+            size="small"
+            @click="alertAuthMenu({ id: scope.row.id })"
+            >菜单授权</el-button
+          > -->
         </template>
       </el-table-column>
     </el-table>
@@ -26,7 +44,7 @@
       :visible.sync="editFormDialogVisible"
       width="width"
     >
-      <el-form :model="editForm" :rules="{name:[{required:true,message:'请输入角色名称',trigger:blur}]}" ref="editForm">
+      <el-form :model="editForm" :rules="{name:[{required:true,message:'请输入角色名称',trigger:'blur'}]}" ref="editForm">
         <el-form-item label="角色名称" prop="name">
           <el-input v-model="editForm.name"></el-input>
         </el-form-item>
@@ -39,14 +57,45 @@
 
     <org-table :roles='allRolesTable'></org-table>
 
-
-
+<!-- 
+     <el-dialog
+       title="菜单授权"
+       :visible.sync="authMenuDialogVisible"
+       width="width"
+     >
+       
+          <el-form
+     
+          ref="menuForm"
+          label-width="150px"
+        >
+  
+          <el-form-item label="菜单" prop="parentId" >
+           <el-cascader
+             :options="menu"
+             v-model="menuForm.menuId"
+             :show-all-levels="false"
+             collapse-tags
+            :props="{  
+       
+               label:'title',
+               value:'id',
+               multiple:true,
+               }"
+             clearable></el-cascader>
+          </el-form-item>
+        </el-form>
+       <div slot="footer">
+         <el-button @click="authMenuDialogVisible = false">取 消</el-button>
+         <el-button type="primary" @click="reqMenuLinkRole">确 定</el-button>
+       </div>
+     </el-dialog> -->
 
     <el-dialog
       title="关联账号"
       :visible.sync="accountDialogVisible"
       width="width"
-      :before-close="dialogBeforeClose"
+  
     >
       <div class="linkAccount">
         <el-select
@@ -100,7 +149,7 @@
               :page-sizes="[10, 20, 30, 40]"
               :page-size="10"
               layout="  prev, pager, next"
-              :total="total"
+           
             >
             </el-pagination>
           </el-col>
@@ -121,8 +170,19 @@ import {
   editRole,
   getRoleById,
   getAllRoles,
+  menuLinkRole
 } from "@/api/index.js";
 import orgTable from '@/views/system/authorization/roleManage/orgTable'
+function children2Null(tree){
+  tree.map(item => {
+    if (Array.isArray(item.children)) {
+      item.children.length === 0
+        ? (item.children = null)
+        : children2Null(item.children)
+    }
+  })
+  return tree
+}
 export default {
   components:{
      orgTable
@@ -132,7 +192,8 @@ export default {
 
       accountDialogVisible: false,
       editFormDialogVisible: false,
- 
+      authMenuDialogVisible :true,
+      loading:false,
       allRolesTable: [],
       staticEditForm: {
         title: "添加角色",
@@ -159,9 +220,22 @@ export default {
         roleId: "",
         accountId: [],
       },
+      // 授权菜单
+      menuForm:{
+        menuId:[],
+        roleCode:'',
+        ope:1
+      },
+   
     };
   },
-  computed: {},
+  computed: {
+    // menu(){
+    //       // 得到的树状结构chilren若为[],置为空
+
+    //   return children2Null(this.$store.state.permission.menu) 
+    // }
+  },
   methods: {
     //添加角色 初始化信息
     alertAddRole() {
@@ -173,6 +247,9 @@ export default {
         state: 1,
       };
       this.editFormDialogVisible = true;
+      this.$nextTick(()=>{
+         this.$refs['editForm'].clearValidate()
+      })
     },
     //修改角色 初始化信息
     async alertEditRole(item) {
@@ -182,8 +259,37 @@ export default {
          Object.assign(this.editForm,res.data.data)
       }
       this.editForm.ope = 2,
+        this.$nextTick(()=>{
+         this.$refs['editForm'].clearValidate()
+      })
       this.editFormDialogVisible = true;
     },
+    // 菜单授权
+   async  alertAuthMenu(row){
+     this.menuForm.roleCode = row.id
+     this.menuForm.ope = 1
+        // menuForm
+        this.authMenuDialogVisible = true
+   },
+  //  角色关联菜单
+   async reqMenuLinkRole(){
+      let temp =[]
+      this.menuId.forEach(item => {
+          temp.push(...item)
+      });
+      this.form.menuId = [...new Set(temp)]
+      try{
+          await  menuLinkRole(this.menuForm);
+      }catch(err){
+        console.log(err);
+        
+      }
+   
+     
+     
+   },
+  //  查询角色所有菜单
+
     // 删除角色
     async alertDelete(roleId) {
       let form = {
@@ -205,21 +311,31 @@ export default {
             message: "删除成功",
           });
           this.reqGetAllRoles();
+        }else{
+           this.reqGetAllRoles();
         }
       }
     },
     // 查询所有角色
     async reqGetAllRoles() {
-      const res = await getAllRoles();
-      if (res.data.code == 100) {
-        this.allRolesTable = res.data.data;
+      this.loading = true;
+       try {
+             const res = await getAllRoles();
+        if (res.data.code == 100) {
+            this.allRolesTable = res.data.data;
+          this.loading = false;
+        } else {
+          this.loading = false;
+        }
+      } catch (err) {
+        this.loading = false;
       }
     },
     reqAddRole() {
       this.$refs.editForm.validate(async (valid) => {
         if (valid) {
           const res = await editRole(this.editForm);
-          console.log(res, 453435);
+       
           if (res.data.code == 100) {
             if (this.editForm.ope == 1) {
               this.$message({
@@ -264,14 +380,7 @@ export default {
   },
 
   mounted() {
-    console.log("111");
-
     this.reqGetAllRoles();
-
-    //查询组织机构信息
-    this.reqGetOrgByParentId().then((res) => {
-      this.reqGetGradeOrg(res[0].id);
-    });
   },
 };
 </script>
