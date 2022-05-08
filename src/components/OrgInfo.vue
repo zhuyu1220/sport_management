@@ -5,7 +5,7 @@
           :style="{width:width}"
           v-model="gradeItem"
           placeholder="年级"
-          clearable
+       
           value-key="id"
           @change="handlerSelect({ lev: 2 })"
           :size = size

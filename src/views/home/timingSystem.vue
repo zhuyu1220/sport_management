@@ -2,8 +2,10 @@
   <div>
     <!-- 设备详情begin -->
      <div>
-         <h2>设备详情</h2>
+         <el-card shadow="never" style="margin:10px 0">设备详情</el-card>
       <el-table
+       :headerCellStyle="{ background: '#C0C4CC' }"
+      :headerRowStyle="{ color: '#000' }"
         :data="equStatus"
         style="width: 100%">
           <el-table-column
@@ -31,7 +33,8 @@
     <!-- 设备详情end -->
     <!--赛事成绩前十 begin -->
     <div>
-        <h2>赛事成绩前十</h2>
+      <div shadow='never' class="searchBar">
+        <p>赛事成绩前十</p>
         <div> 
           <el-select v-model="curItem" placeholder="请选择项目">
               <el-option v-for="(item,index) in matchItems" :key="index" :label="item.name" :value="item.val">
@@ -39,8 +42,12 @@
               </el-option>
           </el-select>
         </div>
+      </div>
+  
          <el-table
         :data="mattchTop10"
+         :headerCellStyle="{ background: '#C0C4CC' }"
+      :headerRowStyle="{ color: '#000' }"
         style="width: 100%">
         <el-table-column
           prop="rank"
@@ -161,6 +168,13 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped >
+ .searchBar{
+   margin: 10px 0;
+  display: flex;
+  justify-content: space-between;
+  padding:0 15px;
+  align-items: center;
+  background: white;
+ }
 </style>

@@ -2,10 +2,13 @@
   <div>
     <!-- 设备详情begin -->
      <div>
-         <h2>设备详情</h2>
+         <p>设备详情</p>
       <el-table
         :data="equStatus"
-        style="width: 100%">
+        style="width: 100%"
+         :headerCellStyle="{ background: '#C0C4CC' }"
+      :headerRowStyle="{ color: '#000' }"
+        >
           <el-table-column
           prop="no"
           label="设备序号"
@@ -30,11 +33,13 @@
      </div>  
     <!-- 设备详情end -->
     <!--个人活跃top5 begin -->
-    <div>
-        <h2>个人活跃top5</h2>
-         <el-table
+    <div class="list">
+     <el-table
         :data="personActiveTop5Format"
-        style="width: 100%">
+        class="topTable"
+         :headerCellStyle="{ background: '#C0C4CC' }"
+      :headerRowStyle="{ color: '#000' }"
+        >
         <el-table-column
           prop="rank"
           label="排名"
@@ -52,15 +57,19 @@
           label="活跃时间"
           width="width"/>
              
-      </el-table>
-
+     </el-table>
+         <!-- 大屏七日使用人次折线图begin -->
+         <el-card class="ls">
+           <p>大屏七日使用人次</p>
+           <div style="width:500px;height:500px" ref="bigScreenUsedtimesChart">
+            
+       </div>
+         </el-card>
+ 
+      <!-- 大屏七日使用人次折线图end -->
     </div>
     <!--个人活跃top5 end -->
-    <!-- 大屏七日使用人次折线图begin -->
-    <div style="width:300px;height:400px" ref="bigScreenUsedtimesChart">
-            
-    </div>
-      <!-- 大屏七日使用人次折线图end -->
+ 
   </div>
 </template>
 
@@ -117,17 +126,10 @@ export default {
     drawBigScreenUsedtimesChart(){
         const Chart = this.$echarts.init(this.$refs.bigScreenUsedtimesChart);
         let options = {
-        title: {
-           text: "大屏使用日人次(近七日)",
-           textStyle: {
-           fontsize: "22px",
-           fontWeight: "normal",
-          },
-          top: 10,
-        },
+      
         tooltip: {},
         xAxis: {
-          data: [1,2,3,4],
+          data: ['星期一','星期二','星期三','星期四','星期五'],
         },
         yAxis: {},
         series: [
@@ -159,6 +161,20 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
+    .list{
+      margin-top: 20px;
+      display: flex;
+      .topTable{
+        margin-right: 15px;
+        flex: 1;
+      }
+      .ls{
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+</style>>
 
-</style>

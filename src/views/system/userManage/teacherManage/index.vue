@@ -230,17 +230,17 @@ export default {
         weight: "",
         schoolCode: "",
         phone: "",
-        pic: [],
+        pic: '',
         isRegiste: "",
       },
       formRules: {
         name: [{ required: true, message: "请输入姓名", trigger: "blur" }],
         no: [{ required: true, message: "请输入工号", trigger: "blur" }],
-      //   height: [{ type: 'number', message: "请输入正确的格式", trigger: "blur" }],
-      //   weight: [{ type: 'number', message: "请输入正确的格式", trigger: "blur" }],
+        //   height: [{ type: 'number', message: "请输入正确的格式", trigger: "blur" }],
+        //   weight: [{ type: 'number', message: "请输入正确的格式", trigger: "blur" }],
         schoolCode: [{ required: true, message: "请选择学校", trigger: "change" }],
         phone: [{ required: true, message: "请输入联系方式", trigger: "blur" }],
-        pic: [{ required: true, message: "请上传照片", trigger: "blur" }],
+        // pic: [{ required: true, message: "请上传照片", trigger: "blur" }],
        
       },
       // 查询账号所需参数
@@ -300,7 +300,7 @@ export default {
         weight: "",
         schoolCode: "",
         phone: "",
-        pic: [],
+        pic: '',
         isRegiste: "",
       }
     },
@@ -315,10 +315,11 @@ export default {
     },
     //修改信息弹框
     async alertUpdate(id) {
+      this.resetForm()
       this.staticForm.title = "修改教师信息";
       if(id) {
         try {
-          const res = await getTeacherById({ id });
+          const res = await getTeacherById({ val:id });
           if (res) {
             Object.assign(this.form, res.data.data);
             this.form.ope = 2;
@@ -333,7 +334,7 @@ export default {
       }
     },
     // 删除信息请求
-    async alertDelete(id) {
+    async reqDelete(id) {
       let params = {
         id,
         ope: 0,
@@ -365,15 +366,14 @@ export default {
     reqEditInfo() {
       this.$refs.form.validate(async (valid) => {
         if (valid) {
-          let formData = new FormData();
-          for(let item in Object.keys(this.form)){
-             if(item == 'pic'){
-                 formData.append(item,this.form[item][0].raw)
-             }
-             formData.append(item,this.form[item])
-          }
-      
-          const res = await editTeacherInfo(formData);
+          // let formData = new FormData();
+          // for(let item in Object.keys(this.form)){
+          //    if(item == 'pic'){
+          //        formData.append(item,this.form[item][0].raw)
+          //    }
+          //    formData.append(item,this.form[item])
+          // }
+          const res = await editTeacherInfo(this.form);
           if (res.data.code == 100) {
             this.$message({
               type: "success",

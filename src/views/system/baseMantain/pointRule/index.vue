@@ -3,7 +3,9 @@
     <el-card>
       <el-button type="primary" @click="alertAdd">增加</el-button>
     </el-card>
-    <el-table :data="tableData"  >
+    <el-table :data="tableData"   :headerCellStyle="{ background: '#C0C4CC' }"
+     :headerRowStyle="{ color: '#000' }"   
+        v-loading="loading" >
     <el-table-column prop="prop" label="序号" type="index"> </el-table-column>
     <el-table-column prop="score" label="积分"> </el-table-column>
     <el-table-column label="增减"> 
@@ -23,14 +25,12 @@
         <el-button type="primary" @click="alertUpdate(scope.row)"
           >修改</el-button
         >
-        <el-popconfirm title="这是一段内容确定删除吗？">
           <el-button
             slot="reference"
             type="primary"
             @click="reqDelete(scope.row.id)"
             >删除</el-button
           >
-        </el-popconfirm>
       </template>
     </el-table-column>
 
@@ -81,7 +81,7 @@
 </template>
 
 <script>
-import {editScoreLevInfo,getScoreLevByPage ,editScoreRuleInfo,getScoreRuleByPage} from '@/api'
+import {editScoreRuleInfo,getScoreRuleByPage} from '@/api'
 export default {
   data() {
     var validateAmount = (rule, value, callback) => {
@@ -92,6 +92,7 @@ export default {
       }
     };
     return {
+       loading:false,
       timeAndMile: [
         {
           value: '1',
@@ -120,16 +121,7 @@ export default {
         id: "",
       },
       tableData: [
-        {
-          ctime: "2022-04-12 18:32:26",
-          id: "11",
-          ope: "",
-          oper: "1",
-          state: "1",
-          type: "1",
-          score: "5",
-          amount: 30,
-        },
+  
       ],
       rules: {
         amount: [
@@ -145,9 +137,9 @@ export default {
           },
         ],
       },
-      queryPrams:{
+      queryParams:{
         currentPage:1,
-        pageSize:10
+        pageSize:20
       }
     };
   },
@@ -163,14 +155,14 @@ export default {
   methods: {
     alertAdd() {
       this.staticForm.title = "增加";
-      (this.form = {
+      this.form = {
         score: "",
         oper: 1,
         type: 1,
         amount: "",
         ope: 1,
-      }),
-        (this.dialogVisible = true);
+      }
+      this.dialogVisible = true
     },
     alertUpdate({ score, oper, type, amount, id }) {
       this.staticForm.title = "修改";
@@ -182,11 +174,12 @@ export default {
       this.$refs.form.validate(async (valid) => {
         if (valid) {
           try {
-            const res = await editScoreRoleInfo(this.form);
+            const res = await editScoreRuleInfo(this.form);
             if (res.data.code == 100) {
               this.$message.success("操作成功");
               this.dialogVisible = false;
             }
+            this.reqQueryByPages()
           } catch (err) {
             console.log(err);
           }
@@ -195,22 +188,37 @@ export default {
     },
      async reqDelete(id) {
       try {
-        const res = await editScoreRoleInfo({id,ope:0});
+        const res = await editScoreRuleInfo({id,ope:0});
         if(res.data.code ==100){
           this.$message.success("删除成功");
-           this.reqGetScoreLevByPage();
+           this.reqQueryByPages();
         }
       
       } catch (error) {
         console.log(error);
       }
     },
-    async reqGetScoreRuleByPage(){
-      const res = await   getScoreRuleByPage(this.queryPrams)
-    }
+        // 分页+条件查询
+    async reqQueryByPages() {    
+      console.log(this.queryParams);
+      
+      this.loading = true;
+      try {
+        const res = await getScoreRuleByPage(this.queryParams);
+        if (res.data.code == 100) {
+          this.tableData = res.data.data;
+          this.total = +res.data.dataTotal;
+          this.loading = false;
+        }
+      } catch (err) {
+      
+        this.loading = false;
+      }
+    },
+   
   },
   mounted(){
-    this.reqGetScoreRuleByPage()
+    this.reqQueryByPages()
   }
 };
 </script>

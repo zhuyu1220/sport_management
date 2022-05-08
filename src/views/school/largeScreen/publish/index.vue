@@ -65,36 +65,31 @@
       :data="tableData"
       border
       style="width: 100%"
-       @selection-change="handleSelectionChange"
       :headerCellStyle="{ background: '#C0C4CC' }"
       :headerRowStyle="{ color: '#000' }"
     >
-         <el-table-column
-      type="selection"
-      width="55"/>
+   
       <el-table-column type="index" label="序号" width="60px">
-     
-    </el-table-column>
- 
+     </el-table-column>
       <el-table-column prop="title" label="标题" width="width">
       </el-table-column>
       <el-table-column prop="startTime" label="开始日期" width="width">
       </el-table-column>
          <el-table-column prop="endTime" label="结束日期" width="width">
       </el-table-column>
-       <el-table-column  label="照片" width="width">
-          <template scope="scope">
-             <el-image
-                style="width: 100px; height: 100px"
-                :src="scope.row.pic"
-                fit="contain "></el-image>
-          </template>
-      </el-table-column>
       <el-table-column prop="msg" label="内容" width="width">
       </el-table-column>
       <el-table-column  label="审核状态" width="width">
         <template slot-scope="scope">
-            {{scope.row.state}}
+            <el-tag v-if="scope.row.state ==2" type="success" >
+                 审核通过
+           </el-tag>
+           <el-tag v-else-if="scope.row.state ==3" type="danger">
+                  审核拒绝
+           </el-tag>
+            <el-tag  v-else type="info" >
+                    待审核
+           </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="操作">
@@ -137,17 +132,6 @@
         <el-form-item label="标题" prop="title">
           <el-input v-model="form.title"></el-input>
         </el-form-item>
-        <el-form-item label="范围" prop="scope">
-          <el-select v-model="form.scope">
-            <el-option
-              v-for="(item, index) in scope"
-              :key="index"
-              :value="item.value"
-              :label="item.label"
-            >
-            </el-option>
-          </el-select>
-        </el-form-item>
         <el-form-item label="有效日期" prop="startTime">
           <el-date-picker
             v-model="form.startTime"
@@ -164,25 +148,8 @@
             placeholder="结束日期"
           />
         </el-form-item>
-        <el-form-item label="封面" prop="pic">
-            <div class="avatar-uploader" style="margin-bottom:30px">
-            <el-upload
-                  drag
-                  :limit="1"
-                  list-type="picture-card"
-                  :file-list="form.pic"
-                  action=""
-                  :auto-upload="false"
-                  :on-change="onChangeFile"
-                  :on-remove="onRemoveFile"
-                  ref="upload"
-            >
-           
-            </el-upload>
-          </div>
-        </el-form-item>
         <el-form-item label="内容" prop="msg">
-          <RichText v-model="form.msg" />
+           <el-input type="textarea" v-model="form.msg" placeholder=""></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer">
@@ -194,7 +161,7 @@
 </template>
 
 <script>
-import RichText from "@/components/RichText";
+
 import {
   editMsgScreenInfo,
   getMsgScreenInfoById,
@@ -202,7 +169,7 @@ import {
 } from "@/api/index.js";
 export default {
   name: "",
-  components: { RichText },
+
   data() {
     return {
       loading: true,
@@ -231,7 +198,6 @@ export default {
         state:'1',
         scope: "",
         title: "",
-        picId: "",
         msg: "",
         startTime: "",
         endTime: "",
@@ -247,8 +213,7 @@ export default {
       rulesForm: {
         title: [{ required: true, message: "请输入标题", trigger: "blur" }],
         startTime: [{ required: true, message: "请输入有效日期", trigger: "blur" }],
-        scope: [{ required: true, message: "请输入范围", trigger: "change" }],
-        pic: [{ required: true, message: "请上传封面", trigger: "change" }],
+
         msg: [{ required: true, message: "请输入内容", trigger: "blur" }],
       },
       total: 1,
@@ -290,11 +255,9 @@ export default {
     resetForm() {
       this.form = {
         id: "",
-        ope: "",
+        ope: 1,
         state:'1',
-        scope: "",
         title: "",
-        picId: "",
         msg: "",
         startTime: "",
         endTime: "",
@@ -314,7 +277,7 @@ export default {
       this.staticForm.title = "修改";
       if (id) {
         try {
-          const res = await getMsgScreenInfoById({ id });
+          const res = await getMsgScreenInfoById({ val:id });
           if (res) {
             Object.assign(this.form, res.data.data);
             this.form.ope = 2;
@@ -332,15 +295,16 @@ export default {
     reqEditInfo() {
       this.$refs.form.validate(async (valid) => {
         if (valid) {
-            let formData = new FormData();
-          for (let item in Object.keys(this.form)) {
-            if (item == "pic") {
-              formData.append(item, this.form[item][0].raw);
-            }
-            formData.append(item, this.form[item]);
-          }
-
-          const res = await editMsgScreenInfo(formData);
+          //   let formData = new FormData();
+          // for (let item in Object.keys(this.form)) {
+          //   if (item == "pic") {
+          //     formData.append(item, this.form[item][0].raw);
+          //   }
+          //   formData.append(item, this.form[item]);
+          // }
+           console.log(editMsgScreenInfo,555555555);
+           
+          const res = await editMsgScreenInfo(this.form);
           if (res.data.code == 100) {
             this.$message({
               type: "success",
@@ -354,7 +318,7 @@ export default {
       });
     },
     // 删除信息请求
-    async alertDelete(id) {
+    async reqDelete(id) {
       let params = {
         id,
         ope: 0,
@@ -395,6 +359,9 @@ export default {
       }
     },
   },
+  mounted(){
+    this.reqQueryByPages()
+  }
 };
 </script>
 

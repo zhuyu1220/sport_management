@@ -4,41 +4,28 @@
          <i class="el-icon-tickets"></i>
         <span>数据列表</span>
           <div style="float:right">
-        <el-button type="primary" size="mini" @click="goback()">返回学校</el-button>
+        <!-- <el-button type="primary" size="mini" @click="goback()">返回学校</el-button> -->
         </div>
      </el-card>
       <el-table
-          :data="org"
+          :data="allOrg"
+              row-key="id"
+          border
+          default-expand-all
+    :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
           v-loading="loading"
           style="width: 100%">
-          <el-table-column
-              prop="code"
-              label="组织编码"
-              width="width">
-          </el-table-column>
-            <el-table-column
-              prop="id"
-              label="组织id"
-              width="width">
-          </el-table-column>
+         
             <el-table-column
               prop="name"
               label="名称"
               width="width">
           </el-table-column>
          
-          <el-table-column
-              width="width"
-              label="设置">
-              <template slot-scope="scope">
-                 <el-button v-show="scope.row.lev !=3"  type="text" @click="queryLower(scope.row.id)"> 查看下级</el-button>
-                 
-                 <!-- <el-button v-show="scope.row.lev !=1" type="text" @click="reqGetOrgByParentId(scope.row.parentId)"> 返回上级</el-button> -->
-              </template>
-          </el-table-column>
+         
           <el-table-column label="操作">
              <template slot-scope="scope">
-                 <el-button type="" @click="alertAuthRole(scope.row.code)">关联角色</el-button>
+                 <el-button type="" size="mini" @click="alertAuthRole(scope.row.code)">关联角色</el-button>
                   <el-popover
                   ref="roleDescPopover"
                   placement="right"
@@ -66,7 +53,7 @@
                             >删除</el-button
                           >
                         </el-popconfirm>
-                         <el-button size="mini" type="text">关联账号</el-button>
+                         <el-button size="mini" type="text"  >关联账号</el-button>
                       </template>
                     </el-table-column>
                   </el-table>
@@ -74,6 +61,7 @@
                     type=""
                     slot="reference"
                     @click="reqGetRolesByOrgId(scope.row.id)"
+                    size="mini"
                     >角色详情</el-button
                   >
                 </el-popover>
@@ -104,6 +92,33 @@
         <el-button type="primary" @click="reqRoleOrgLinkInfo">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 关联账号 -->
+             <el-dialog
+               title=""
+               :visible.sync="accountVisible"
+               width="width"
+              >
+               <div>
+                 
+                 <el-form ref="accountForm" :model="accountForm" label-width="80px">
+                        <el-select v-model="model" placeholder="">
+                          <el-option
+                            v-for="item in options"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                          </el-option>
+                        </el-select>
+                 </el-form>
+               </div>
+               <div slot="footer">
+                 <el-button @click="accountVisible = false">取 消</el-button>
+                 <el-button type="primary" @click="accountVisible = false">确 定</el-button>
+               </div>
+             </el-dialog>
+
+
+    <!-- 关联账号 -->
   </div>
 </template>
 
@@ -112,15 +127,47 @@ import {
   getRolesByOrgId,
   editRoleOrgLinkInfo,
   getOrgByParentId,
+  getAllOrg,
+  accountLinkRoleOrg,
+  getAccountByPage
 } from "@/api/index.js";
+function treeing(arr) {
+  let tree = [];
+  const map = {};
+  for (let item of arr) {
+    // 一个新的带children的结构
+    let newItem = (map[item.id] = {
+      ...item,
+      children: [],
+    });
+    if (map[item.parentId]) {
+      // 父节点已存进map则在父节点的children添加新元素
+      let parent = map[item.parentId];
+      parent.children.push(newItem);
+    } else {
+      // 没有父节点，在根节点添加父节点
+      tree.push(newItem);
+    }
+  }
+  return tree;
+}
 export default {
     name:'orgTable',
   data(){
       return{
+      accountVisible:true,
+      allOrg:[],
+      allCount:[],
       loading: false,
       roleLoading:false,
       staticRoleForm: {
         title: "添加角色",
+      },
+      accountForm:{
+          orgCode:"",
+          roleCode:'',
+          accountId:'',
+          ope:'1'
       },
       ruleForm:{ roleId:[{required:true,message:'请选择角色',trigger:'change'}]},
       roleForm: {
@@ -140,6 +187,14 @@ export default {
  
 
   methods:{
+    async reqGetAllOrg(){
+     const res = await getAllOrg();
+     this.allOrg = treeing(res.data.data);
+    },
+    async reqGetAllCount(){
+       const res = await getAccountByPage({ currentPage: 1, pageSize: 200, name: "", username: "",});
+       this.allOrg = treeing(res.data.data);
+    },
      async reqDeleteRoleLinkOrg({ orgCode,orgId, roleId }) {
       const res = await editRoleOrgLinkInfo({ ope: 0, orgCode, roleId:[roleId] });
       if (res.data.code == 100) {
@@ -229,7 +284,9 @@ export default {
     }
   },
   mounted(){
-       this.reqGetOrgByParentId(-1)
+      //  this.reqGetOrgByParentId(-1)
+         this.reqGetAllOrg()
+         this.reqGetAllCount()
   }
 }
 </script>

@@ -19,12 +19,9 @@
           <el-form-item label="姓名">
             <el-input type="text" v-model="queryParams.name"></el-input>
           </el-form-item>
-          <el-form-item label="年级">
-            <el-input type="text" v-model="queryParams.grade"></el-input>
-          </el-form-item>
-          <el-form-item label="班级">
-            <el-input type="text" v-model="queryParams.class"></el-input>
-          </el-form-item>
+            <el-form-item label="年级/班级">
+               <org-info ref="orgInfo" @handlerChange="selectOrg"></org-info>
+           </el-form-item>
         </el-form>
       </div>
     </el-card>
@@ -51,7 +48,7 @@
         >
         <el-button
           type="warning"
-          @click="batchPass(2)"
+          @click="batchPass(0)"
           size="mini"
           :disabled="multipleSelection.length < 1"
           icon="el-icon-s-check"
@@ -63,6 +60,7 @@
     <!-- 工具栏结束 -->
 
     <el-table
+       v-loading="loading"
       :data="tableData"
       style="width: 100%"
       @selection-change="handleSelectionChange"
@@ -87,7 +85,15 @@
       </el-table-column>
       <el-table-column label="审核状态" width="width">
         <template slot-scope="scope">
-          {{ scope.row.state }}
+            <span v-if="scope.row.state ==0">
+                审核拒绝
+            </span>
+              <span v-else-if="scope.row.state ==1">
+                审核通过
+            </span>
+            <span v-else>
+                未审核
+            </span>
         </template>
       </el-table-column>
       <el-table-column label="操作">
@@ -101,7 +107,7 @@
           <el-button type="text" @click="batchPass(1, scope.row.id)"
             >通过</el-button
           >
-          <el-button type="text" @click="batchPass(2, scope.row.id)"
+          <el-button type="text" @click="batchPass(0, scope.row.id)"
             >拒绝</el-button
           >
         </template>
@@ -113,9 +119,9 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page="queryParams.currentPage"
-          :page-sizes="[10, 20, 30, 40]"
+          :page-sizes="[5, 10, 15]"
           :page-size="10"
-          layout=" sizes, prev, pager, next, jumper,total"
+          layout=" sizes, prev, pager, next, total"
           :total="total"
         >
         </el-pagination>
@@ -123,7 +129,7 @@
     </el-row>
     <!-- 学生信息表单 -->
     <el-dialog
-      :title="staticUserForm.title"
+      :title="staticForm.title"
       :visible.sync="formDialogVisible"
       width="width"
     >
@@ -166,47 +172,25 @@
           </el-upload>
         </el-form-item>
         <el-form-item label="所属组织">
-          <!-- 查询年级 根据学校的id -->
-          <el-select
+          <el-cascader
+             style="width:300px"
+            :options="allOrg"
+            v-model="curOrg"
+            :show-all-levels="true"
+            collapse-tags
+            :props="{
+              label: 'name',
+              value: 'code',
+              multiple: false,
+            }"
             clearable
-            @change="reqGetGaradeByParentId(org.schoolCode.id)"
-            v-model="org.schoolCode"
-            placeholder="请输入选择学校"
-          >
-            <el-option
-              v-for="(item, index) in org.schoolArray"
-              :key="index"
-              :label="item.name"
-              :value="item"
-            >
-            </el-option>
-          </el-select>
-          <el-select
-            @change="reqGetClassByParentId(org.gradeCode.id)"
-            v-model="org.gradeCode"
-            placeholder="请选择年级"
-          >
-            <el-option
-              v-for="(item, index) in org.gradeArray"
-              :key="index"
-              :label="item.name"
-              :value="item"
-            />
-          </el-select>
-          <el-select v-model="org.classCode" placeholder="请选择班级">
-            <el-option
-              v-for="(item, index) in org.gradeArray"
-              :key="index"
-              :label="item.name"
-              :value="item.code"
-            />
-          </el-select>
+          ></el-cascader>
         </el-form-item>
         <el-form-item label="身高(厘米)" prop="height">
-          <el-input v-model="userForm.name"></el-input>
+          <el-input v-model="userForm.height"></el-input>
         </el-form-item>
         <el-form-item label="体重(千克)" prop="weight">
-          <el-input v-model="userForm.account"></el-input>
+          <el-input v-model="userForm.weight"></el-input>
         </el-form-item>
         <el-form-item label="联系方式一">
           <el-input v-model="userForm.phone1"></el-input>
@@ -215,7 +199,7 @@
           <el-input v-model="userForm.phone2"></el-input>
         </el-form-item>
         <el-form-item label="联系方式三">
-          <el-input v-model="userForm.phone1"></el-input>
+          <el-input v-model="userForm.phone3"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer">
@@ -256,25 +240,32 @@
 </template>
 
 <script>
+
 import {
-  getOrgByParentId,
   editStudentInfo,
   checkStudentInfo,
   queryStudentByPage,
   getSutdentById,
+  getAllOrg
 } from "@/api/index.js";
+import {treeing} from '@/utils/tool'
+import OrgInfo from "@/components/OrgInfo";
 export default {
+  components:{
+    OrgInfo,
+  },
   data() {
     return {
-      progressPercent: 0,
+      allOrg: [],
+      curOrg:[],
+      loading:false,
       excelDialogVisible: false,
+       dialogVisible: false,
       multipleSelection: [],
-      staticUserForm: {
-        title: "增加",
-        user: "学生",
+      staticForm:{
+        title:"添加"
       },
       formDialogVisible: false,
-      userInfo: {},
       userForm: {
         no: "",
         name: "",
@@ -287,39 +278,31 @@ export default {
         phone1: "",
         phone2: "",
         phone3: "",
-        pic: [],
+        pic: '',
         ope: "1",
       },
 
       formRules: {
-        no: [{ required: true, message: "请输入", trigger: "blur" }],
-        name: [{ required: true, message: "请输入", trigger: "blur" }],
-        pic: [{ required: true, message: "请上传照片", trigger: "blur" }],
+        no: [{ required: true, message: "请输入学号", trigger: "blur" }],
+        name: [{ required: true, message: "请输入姓名", trigger: "blur" }],
+        // pic: [{ required: true, message: "请上传照片", trigger: "blur" }],
         height: [{ required: true, message: "请输入身高", trigger: "blur" }],
         weight: [{ required: true, message: "请输入体重", trigger: "blur" }],
       },
       imageUrl: "",
       dialogImageUrl: "",
-      dialogVisible: false,
-      org: {
-        schoolCode: "",
-        gradeCode: "",
-        classCode: "",
-        schoolArray: [],
-        gradeArray: [],
-        classArray: [],
-      },
       tableData: [],
       queryParams: {
         currentPage: 1,
         pageSize: 10,
-        grade: "",
-        class: "",
+        gradeCode: "",
+        classCode: "",
         name: "",
       },
       total: 1,
     };
   },
+ 
   methods: {
     reqDelete(id) {
       this.$confirm("此操作将删除该角色, 是否继续?", "提示", {
@@ -333,19 +316,40 @@ export default {
             type: "success",
             message: "删除成功",
           });
-          this.reqQueryStudentByPage();
+          this.formDialogVisible =false;
+          this.reqQueryByPages();
         }
       });
     },
-
+       // 选择年级或者班级查询
+    selectOrg(item) {
+      console.log(item,5555555555);
+      
+      if (item.lev == 2) {
+        console.log(item.id,this.queryParams.gradeCode,5666666666);
+        
+        this.queryParams.gradeCode =item.id;
+        this.queryParams.classCode = "";
+      } else {
+        this.queryParams.classCode =item.id;
+      }
+    },
+    async reqGetAllOrg(){
+     const res = await getAllOrg();
+     this.allOrg = treeing(res.data.data);
+    },
     async alertUpdate(id) {
       this.staticForm.title = "修改";
       if(id) {
         try {
-          const res = await getSutdentById({ id });
+          const res = await getSutdentById({ val:id });
+          
+          
           if (res) {
-            Object.assign(this.form, res.data.data);
-            this.form.ope = 2;
+            console.log(res.data.data,5556666);
+            Object.assign(this.userForm, res.data.data);
+          
+            this.userForm.ope = 2;
             this.formDialogVisible = true;
              this.$nextTick(() => {
                this.$refs['userForm'].clearValidate()
@@ -358,9 +362,9 @@ export default {
     },
     
     alertAdd() {
-      this.staticUserForm = {
+      this.staticForm = {
         title: "增加",
-        user: "学生",
+     
       };
       this.userForm = {
         no: "",
@@ -374,7 +378,7 @@ export default {
         phone1: "",
         phone2: "",
         phone3: "",
-        pic: [],
+        pic: '',
         ope: "1",
       };
       this.$nextTick(() => {
@@ -384,35 +388,48 @@ export default {
     },
     handleResetSearch() {
       this.queryParams.name = "";
-      this.queryParams.grade = "";
-      this.queryParams.class = "";
+      this.queryParams.gradeCode = "";
+      this.queryParams.classCode = "";
     },
        //点击查询按钮 发送分页查询请求
     handleSearchList(){
        this.queryParams.currentPage =1
-       this.reqQueryStudentByPage();
+       this.reqQueryByPages();
     },
     //查询学生详情
     async reqUserDesc(id) {
-      const res = await getSutdentById({ id });
+      const res = await getSutdentById({val:id});
       Object.assign(this.userForm, res.data.data);
     },
     // 分页查询
-    async reqQueryStudentByPage() {
-      const res = await queryStudentByPage(this.queryParams);
-      this.total = res.data.dataSize;
-      this.tableData = res.data.data;
+    async reqQueryByPages() {
+      this.loading = true;
+      try {
+        const res = await queryStudentByPage(this.queryParams);
+        if (res.data.code == 100) {
+          this.tableData = res.data.data;
+          this.total = +res.data.dataTotal;
+          this.loading = false;
+        }
+      } catch (err) {
+        console.log(err);
+        this.loading = false;
+      }
     },
     async reqSubmitUserForm() {
       this.$refs.userForm.validate(async (valid) => {
         if (valid) {
-          const res = await this.userForm();
+          this.userForm.schoolCode = this.curOrg?.[0]
+          this.userForm.gradeCode = this.curOrg?.[1]
+          this.userForm.classCode = this.curOrg?.[2]
+          const res = await editStudentInfo(this.userForm);
           if (res.data.code == 100) {
             this.$message({
               type: "success",
               message: "操作成功",
             });
-            this.reqQueryStudentByPage();
+            this.formDialogVisible = false;
+            this.reqQueryByPages();
           }
         }
       });
@@ -441,7 +458,7 @@ export default {
           ids.push(item.id);
         });
       }
-      const res = await checkTeacherInfo({ ids, ope });
+      const res = await checkStudentInfo({ ids, ope });
       if (res.data.code == 100) {
         this.$message({
           type: "success",
@@ -450,20 +467,7 @@ export default {
         this.reqQueryByPages();
       }
     },
-    // 查询学校组织 查询年级组织 查询班级组织 为了选择
-    async reqGetSchoolByParentId(parentId) {
-      const res = await getOrgByParentId({ parentId });
-      this.org.schoolArray = res.data.data;
-    },
-    async reqGetGaradeByParentId(parentId) {
-      console.log(parentId);
-      const res = await getOrgByParentId({ parentId });
-      this.org.gradeArray = res.data.data;
-    },
-    async reqGetClassByParentId(parentId) {
-      const res = await getOrgByParentId({ parentId });
-      this.org.classArray = res.data.data;
-    },
+  
     onChangeFile(file, fileList) {
       this.userForm.pic = fileList;
     },
@@ -474,12 +478,14 @@ export default {
       this.multipleSelection = val;
     },
     handleSizeChange(val) {
+         this.queryParams.currentPage = 1;
       this.queryParams.pageSize = val;
-      this.reqQueryStudentByPage();
+      this.reqQueryByPages();
     },
     handleCurrentChange(val) {
+            this.queryParams.currentPage = 1;
       this.queryParams.currentPage = val;
-      this.reqQueryStudentByPage();
+      this.reqQueryByPages();
     },
     // 批量上传学生信息
     batchUpload(param) {
@@ -503,8 +509,8 @@ export default {
     },
   },
   mounted() {
-    this.reqQueryStudentByPage();
-    this.reqGetSchoolByParentId({ parentId: -1 });
+    this.reqQueryByPages();
+ this.reqGetAllOrg()
   },
 };
 </script>

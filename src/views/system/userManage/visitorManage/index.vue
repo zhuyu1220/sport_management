@@ -189,11 +189,12 @@
 
 import {
   getVisitorById,
- 
   editVisitorInfo,
   getOrgByParentId,
   queryVisitorByPage,
 } from "@/api/index.js";
+
+
 export default {
   data() {
     return {
@@ -216,7 +217,7 @@ export default {
         weight: "",
         schoolCode: "",
         phone: "",
-        pic: [],
+        pic: '',
         isRegiste: "",
       },
       formRules: {
@@ -226,7 +227,7 @@ export default {
       //   weight: [{ type: 'number', message: "请输入正确的格式", trigger: "blur" }],
         schoolCode: [{ required: true, message: "请选择学校", trigger: "change" }],
         phone: [{ required: true, message: "请输入联系方式", trigger: "blur" }],
-        pic: [{ required: true, message: "请上传照片", trigger: "blur" }],
+        // pic: [{ required: true, message: "请上传照片", trigger: "blur" }],
        
       },
       // 查询账号所需参数
@@ -286,7 +287,7 @@ export default {
         weight: "",
         schoolCode: "",
         phone: "",
-        pic: [],
+        pic: '',
         isRegiste: "",
       }
     },
@@ -304,7 +305,7 @@ export default {
       this.staticForm.title = "修改访客信息";
       if(id) {
         try {
-          const res = await getVisitorById({ id });
+          const res = await getVisitorById({ val:id });
           if (res) {
             Object.assign(this.form, res.data.data);
             this.form.ope = 2;
@@ -351,15 +352,15 @@ export default {
     reqEditInfo() {
       this.$refs.form.validate(async (valid) => {
         if (valid) {
-          let formData = new FormData();
-          for(let item in Object.keys(this.form)){
-             if(item == 'pic'){
-                 formData.append(item,this.form[item][0].raw)
-             }
-             formData.append(item,this.form[item])
-          }
+          // let formData = new FormData();
+          // for(let item in Object.keys(this.form)){
+          //    if(item == 'pic'){
+          //        formData.append(item,this.form[item][0].raw)
+          //    }
+          //    formData.append(item,this.form[item])
+          // }
       
-          const res = await editVisitorInfo(formData);
+          const res = await editVisitorInfo(this.form);
           if (res.data.code == 100) {
             this.$message({
               type: "success",
@@ -374,7 +375,7 @@ export default {
     },
    
     // 分页+条件查询
-    async reqQueryByPages() {
+    async reqQueryByPages() {    
       this.loading = true;
       try {
         const res = await queryVisitorByPage(this.queryParams);
@@ -384,7 +385,7 @@ export default {
           this.loading = false;
         }
       } catch (err) {
-        console.log(err);
+      
         this.loading = false;
       }
     },

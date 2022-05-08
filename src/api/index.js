@@ -4,12 +4,10 @@ export  * from './organization'
 export { editRole, getRoleById, getAllRoles, getRolesByOrgId, editRoleOrgLinkInfo } from './roleManage'
 export * from './menu'
 export {getAccountByPage,editAccountInfo,accountLinkRoleOrg,getAccountDetail } from './account'
-export {editStudentInfo, checkStudentInfo, queryStudentByPage, getSutdentById,
-       editTeacherInfo, checkTeacherInfo, queryTeacherByPage, getTeacherById,
-    editVistorInfo, queryVistorByPage, getVistroById, checkVistorInfo, getOrgsBySchoolId
-} from './user'
+export * from './user'
 export { editScoreLevInfo, getScoreLevByPage, editScoreRuleInfo, getScoreRuleByPage } from './levelAndScore'
 export { editWristbandInfo, queryWristbandByPage, getWristBandById } from '@/api/run/wristband'
 export * from '@/api/run/orderAccount'
+export * from './MsgSchool'
 export * from '@/api/run/game'
 export * from '@/api/run/event'

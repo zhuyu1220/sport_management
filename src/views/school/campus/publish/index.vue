@@ -22,8 +22,7 @@
           <el-form-item label="有效日期">
             <el-date-picker
               v-model="queryParams.startTime"
-                 format="yyyy年 MM 月 dd 日"
-            
+              format="yyyy年 MM 月 dd 日"
               type="date"
               placeholder="开始日期"
             >
@@ -31,21 +30,21 @@
             -
             <el-date-picker
               v-model="queryParams.endTime"
-                 format="yyyy 年 MM 月 dd 日"
-    
+              format="yyyy 年 MM 月 dd 日"
               type="date"
               placeholder="结束日期"
             />
           </el-form-item>
           <el-form-item label="审核状态">
-              <el-select v-model="queryParams.state" placeholder="">
-                <el-option
-                  v-for="item in stateOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
+            <el-select v-model="queryParams.state" placeholder="">
+              <el-option
+                v-for="item in stateOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
           </el-form-item>
         </el-form>
       </div>
@@ -60,46 +59,52 @@
       </div>
     </el-card>
     <!-- 工具栏结束 -->
-     <el-table
+    <el-table
       v-loading="loading"
       :data="tableData"
       border
       style="width: 100%"
-       @selection-change="handleSelectionChange"
       :headerCellStyle="{ background: '#C0C4CC' }"
       :headerRowStyle="{ color: '#000' }"
     >
-         <el-table-column
-      type="selection"
-      width="55"/>
       <el-table-column type="index" label="序号" width="60px">
-     
-    </el-table-column>
- 
+      </el-table-column>
       <el-table-column prop="title" label="标题" width="width">
       </el-table-column>
       <el-table-column prop="startTime" label="开始日期" width="width">
       </el-table-column>
-         <el-table-column prop="endTime" label="结束日期" width="width">
+      <el-table-column prop="endTime" label="结束日期" width="width">
       </el-table-column>
-       <el-table-column  label="照片" width="width">
-          <template scope="scope">
-             <el-image
-                style="width: 100px; height: 100px"
-                :src="scope.row.pic"
-                fit="contain "></el-image>
-          </template>
+      <el-table-column label="照片" width="width">
+        <template scope="scope">
+          <el-image
+            style="width: 100px; height: 100px"
+            :src="scope.row.pic"
+            fit="contain "
+          ></el-image>
+        </template>
       </el-table-column>
-      <el-table-column prop="msg" label="内容" width="width">
-      </el-table-column>
-      <el-table-column  label="审核状态" width="width">
+      <el-table-column prop="msg" label="内容" width="width"> </el-table-column>
+      <el-table-column label="审核状态" width="width">
         <template slot-scope="scope">
-            {{scope.row.state}}
+       <!-- {{scope.row.state}} -->
+           <el-tag v-if="scope.row.state ==2" type="success" >
+                 审核通过
+           </el-tag>
+           <el-tag v-else-if="scope.row.state ==3" type="danger">
+                  审核拒绝
+           </el-tag>
+            <el-tag  v-else type="info" >
+                    待审核
+           </el-tag>
+         
         </template>
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button type="text" @click="alertUpdate(scope.row.id)">编辑</el-button>
+          <el-button type="text" @click="alertUpdate(scope.row.id)"
+            >编辑</el-button
+          >
           <el-button type="text" @click="reqDelete(scope.row.id)"
             >删除</el-button
           >
@@ -120,7 +125,7 @@
       >
       </el-pagination>
     </div>
-   
+
     <el-dialog
       width="70%"
       height="800px"
@@ -151,7 +156,7 @@
         <el-form-item label="有效日期" prop="startTime">
           <el-date-picker
             v-model="form.startTime"
-            format="yyyy 年 MM 月 dd 日"     
+            format="yyyy 年 MM 月 dd 日"
             type="date"
             placeholder="开始日期"
           >
@@ -165,19 +170,18 @@
           />
         </el-form-item>
         <el-form-item label="封面" prop="pic">
-            <div class="avatar-uploader" style="margin-bottom:30px">
+          <div class="avatar-uploader" style="margin-bottom: 30px">
             <el-upload
-                  drag
-                  :limit="1"
-                  list-type="picture-card"
-                  :file-list="form.pic"
-                  action=""
-                  :auto-upload="false"
-                  :on-change="onChangeFile"
-                  :on-remove="onRemoveFile"
-                  ref="upload"
+              drag
+              :limit="1"
+              list-type="picture-card"
+              :file-list="form.pic"
+              action=""
+              :auto-upload="false"
+              :on-change="onChangeFile"
+              :on-remove="onRemoveFile"
+              ref="upload"
             >
-           
             </el-upload>
           </div>
         </el-form-item>
@@ -207,28 +211,37 @@ export default {
     return {
       loading: true,
       formDialog: false,
-      stateOptions:[{
-        label:"提交后待审核",value:'1'
-      },{
-        label:"审核通过",value:'2'
-      },{
-        label:"审核退回",value:'3'
-      },{
-        label:"待提交",value:'4'
-      },],
-      scope: [
-        { value: 1, label: "学校" },
-        { value: 2, label: "年级" },
-        { value: 3, label: "班级" },
+      stateOptions: [
+        {
+          label: "提交后待审核",
+          value: "1",
+        },
+        {
+          label: "审核通过",
+          value: "2",
+        },
+        {
+          label: "审核退回",
+          value: "3",
+        },
+        {
+          label: "待提交",
+          value: "4",
+        },
       ],
-      tableData:[],
+      scope: [
+        { value: '1', label: "学校" },
+        { value: '2', label: "年级" },
+        { value: '3', label: "班级" },
+      ],
+      tableData: [],
       staticForm: {
         title: "添加",
       },
       form: {
         id: "",
         ope: "",
-        state:'1',
+        state: "1",
         scope: "",
         title: "",
         picId: "",
@@ -246,9 +259,11 @@ export default {
       },
       rulesForm: {
         title: [{ required: true, message: "请输入标题", trigger: "blur" }],
-        startTime: [{ required: true, message: "请输入有效日期", trigger: "blur" }],
+        startTime: [
+          { required: true, message: "请输入有效日期", trigger: "blur" },
+        ],
         scope: [{ required: true, message: "请输入范围", trigger: "change" }],
-        pic: [{ required: true, message: "请上传封面", trigger: "change" }],
+        // pic: [{ required: true, message: "请上传封面", trigger: "change" }],
         msg: [{ required: true, message: "请输入内容", trigger: "blur" }],
       },
       total: 1,
@@ -290,8 +305,8 @@ export default {
     resetForm() {
       this.form = {
         id: "",
-        ope: "",
-        state:'1',
+        ope: "1",
+        state: "1",
         scope: "",
         title: "",
         picId: "",
@@ -332,15 +347,15 @@ export default {
     reqEditInfo() {
       this.$refs.form.validate(async (valid) => {
         if (valid) {
-            let formData = new FormData();
-          for (let item in Object.keys(this.form)) {
-            if (item == "pic") {
-              formData.append(item, this.form[item][0].raw);
-            }
-            formData.append(item, this.form[item]);
-          }
+          //   let formData = new FormData();
+          // for (let item in Object.keys(this.form)) {
+          //   if (item == "pic") {
+          //     formData.append(item, this.form[item][0].raw);
+          //   }
+          //   formData.append(item, this.form[item]);
+          // }
 
-          const res = await editMsgSchoolInfo(formData);
+          const res = await editMsgSchoolInfo(this.form);
           if (res.data.code == 100) {
             this.$message({
               type: "success",
@@ -354,7 +369,7 @@ export default {
       });
     },
     // 删除信息请求
-    async alertDelete(id) {
+    async reqDelete(id) {
       let params = {
         id,
         ope: 0,
@@ -394,6 +409,9 @@ export default {
         this.loading = false;
       }
     },
+  },
+  mounted() {
+    this.reqQueryByPages();
   },
 };
 </script>

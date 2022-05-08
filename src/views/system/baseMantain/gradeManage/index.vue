@@ -3,25 +3,43 @@
     <el-card>
       <el-button type="primary" @click="alertAdd">添加</el-button>
     </el-card>
-    <el-table :data="gradeTable">
+    <el-table
+     :data="gradeTable"   
+     :headerCellStyle="{ background: '#C0C4CC' }"
+     :headerRowStyle="{ color: '#000' }"   
+        v-loading="loading">
       <el-table-column label="名称" prop="name"> </el-table-column>
-      <el-table-column label="积分" prop="name"> </el-table-column>
+      <el-table-column label="积分" prop="score"> </el-table-column>
+         <el-table-column label="等级" prop="lev"> </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" @click="alertUpdate(scope.row)"
+          <el-button type="primary" size="mini" @click="alertUpdate(scope.row)"
             >修改</el-button
           >
-          <el-popconfirm title="这是一段内容确定删除吗？">
             <el-button
               slot="reference"
-              type="primary"
+              type="danger"
+              size="mini"
               @click="reqDelete(scope.row.id)"
               >删除</el-button
             >
-          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
+    
+    <div style="float: right">
+      <el-pagination
+        background
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="queryParams.currentPage"
+        :page-sizes="[5, 10, 15]"
+        :page-size="10"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+      >
+      </el-pagination>
+    </div>
     <el-dialog
       :title="staticForm.title"
       :visible.sync="dialogVisible"
@@ -40,8 +58,8 @@
         <el-form-item label="积分" prop="score">
           <el-input v-model="form.score"></el-input>
         </el-form-item>
-        <el-form-item label="等级" prop="grade">
-          <el-select v-model="form.grade">
+        <el-form-item label="等级" prop="lev">
+          <el-select v-model="form.lev">
             <el-option
               v-for="(item, index) in lev"
               :key="index"
@@ -78,6 +96,7 @@ import {editScoreLevInfo,getScoreLevByPage ,editScoreRuleInfo,getScoreRuleByPage
 export default {
   data() {
     return {
+      loading:false,
       dialogVisible: false,
       staticForm: {
         title: "添加",
@@ -112,37 +131,27 @@ export default {
             trigger: "blur",
           },
         ],
-        grade: [
+        lev: [
           {
             required: true,
             message: "请选择等级",
             trigger: "change",
           },
         ],
-        pic: [
-          {
-            required: true,
-            message: "请上传",
-            trigger: "change",
-          },
-        ],
+        // pic: [
+        //   {
+        //     required: true,
+        //     message: "请上传",
+        //     trigger: "change",
+        //   },
+        // ],
       },
-      gradeTable: [
-        {
-          id: 1,
-          name: "星星",
-          pic: "",
-          score: "100",
-          lev: 1,
-        },
-        {
-          id: 2,
-          name: "月亮",
-          pic: "",
-          score: "100",
-          lev: 2,
-        },
-      ],
+      queryParams:{
+          currentPage:1,
+          pageSize:20
+      },
+      gradeTable: [],
+      total:0
     };
   },
   methods: {
@@ -174,6 +183,7 @@ export default {
     alertUpdate(row) {
       this.staticForm.title = "修改";
       Object.assign(this.form, row);
+      this.form.ope = 2
       this.dialogVisible = true;
     },
     reqSubmit() {
@@ -185,7 +195,8 @@ export default {
               type: "success",
               message: "操作成功",
             });
-            this.reqGetScoreLevByPage();
+               this.reqQueryByPages();
+               this.dialogVisible = false;
           } catch (error) {
             console.log(error);
           }
@@ -194,18 +205,47 @@ export default {
     },
     async reqDelete(id) {
       try {
-        const res = await editScoreLevInfo(id);
+        const res = await editScoreLevInfo({id,ope:0});
         if(res.data.code ==100){
           this.$message.success("删除成功");
-           this.reqGetScoreLevByPage();
+           this.reqQueryByPages();
         }
       
       } catch (error) {
         console.log(error);
       }
     },
-    reqGetScoreLevByPage() {},
+    // 分页+条件查询
+    async reqQueryByPages() {    
+      this.loading = true;
+      try {
+        const res = await getScoreLevByPage(this.queryParams);
+        if (res.data.code == 100) {
+          this.gradeTable = res.data.data;
+          this.total = +res.data.dataTotal;
+          this.loading = false;
+        }
+      } catch (err) {
+      
+        this.loading = false;
+      }
     },
+      // 修改每页展示条数
+    handleSizeChange(val) {
+      this.queryParams.currentPage = 1;
+      this.queryParams.pageSize = val;
+      this.reqQueryByPages();
+    },
+    // 修改页码
+    handleCurrentChange(val) {
+      this.queryParams.currentPage = 1;
+      this.queryParams.currentPage = val;
+      this.reqQueryByPages();
+    },
+    },
+    mounted(){
+      this.reqQueryByPages()
+    }
 };
 </script>
 

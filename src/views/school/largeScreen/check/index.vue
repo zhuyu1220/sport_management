@@ -65,13 +65,11 @@
       :data="tableData"
       border
       style="width: 100%"
-       @selection-change="handleSelectionChange"
+      
       :headerCellStyle="{ background: '#C0C4CC' }"
       :headerRowStyle="{ color: '#000' }"
     >
-         <el-table-column
-      type="selection"
-      width="55"/>
+    
       <el-table-column type="index" label="序号" width="60px">
      
     </el-table-column>
@@ -94,7 +92,15 @@
       </el-table-column>
       <el-table-column  label="审核状态" width="width">
         <template slot-scope="scope">
-            {{scope.row.state}}
+            <el-tag v-if="scope.row.state ==2" type="success" >
+                 审核通过
+           </el-tag>
+           <el-tag v-else-if="scope.row.state ==3" type="danger">
+                  审核拒绝
+           </el-tag>
+            <el-tag  v-else type="info" >
+                    待审核
+           </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="操作">
@@ -104,7 +110,7 @@
             >通过</el-button
           >
            <el-button type="text"
-           @click="batchPass(2,scope.row.id)"
+           @click="batchPass(0,scope.row.id)"
             >拒绝</el-button
           >
         </template>
@@ -214,7 +220,7 @@ export default {
     resetForm() {
       this.form = {
         id: "",
-        ope: "",
+        ope: 1,
         state:'1',
         scope: "",
         title: "",
@@ -226,16 +232,16 @@ export default {
     },
         //批量审核 + 单个审核
     async batchPass(ope,id){
-        let ids =[]
-        // 判断是批量操作还是单个操作
-        if(id){
-           ids.push(id)
-        }else{
-          this.multipleSelection.forEach(item=>{
-          ids.push(item.id)
-        })
-        }
-      const res =   await checkMsgScreenInfo({ids,ope})
+        // let ids =[]
+        // // 判断是批量操作还是单个操作
+        // if(id){
+        //    ids.push(id)
+        // }else{
+        //   this.multipleSelection.forEach(item=>{
+        //   ids.push(item.id)
+        // })
+        // }
+      const res =   await checkMsgScreenInfo({id,ope})
       if(res.data.code ==100){
          this.$message({
             type: "success",
@@ -260,6 +266,9 @@ export default {
       }
     },
   },
+  mounted(){
+    this.reqQueryByPages()
+  }
 };
 </script>
 

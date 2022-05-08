@@ -65,7 +65,7 @@
       :data="tableData"
       border
       style="width: 100%"
-       @selection-change="handleSelectionChange"
+  
       :headerCellStyle="{ background: '#C0C4CC' }"
       :headerRowStyle="{ color: '#000' }"
     >
@@ -94,7 +94,15 @@
       </el-table-column>
       <el-table-column  label="审核状态" width="width">
         <template slot-scope="scope">
-            {{scope.row.state}}
+            <el-tag v-if="scope.row.state ==2" type="success" >
+                 审核通过
+           </el-tag>
+           <el-tag v-else-if="scope.row.state ==3" type="danger">
+                  审核拒绝
+           </el-tag>
+            <el-tag  v-else type="info" >
+                    待审核
+           </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="操作">
@@ -104,7 +112,7 @@
             >通过</el-button
           >
            <el-button type="text"
-           @click="batchPass(2,scope.row.id)"
+           @click="batchPass(0,scope.row.id)"
             >拒绝</el-button
           >
         </template>
@@ -132,7 +140,8 @@
 <script>
 
 import {
-  checkMsgSchoolInfo
+  checkMsgSchoolInfo,
+  getMsgSchoolInfoByPage
 } from "@/api/index.js";
 export default {
   name: "",
@@ -234,7 +243,7 @@ export default {
           ids.push(item.id)
         })
         }
-      const res =   await checkMsgSchoolInfo({ids,ope})
+      const res =   await checkMsgSchoolInfo({id,ope})
       if(res.data.code ==100){
          this.$message({
             type: "success",
@@ -259,6 +268,9 @@ export default {
       }
     },
   },
+  mounted(){
+    this.reqQueryByPages()
+  }
 };
 </script>
 

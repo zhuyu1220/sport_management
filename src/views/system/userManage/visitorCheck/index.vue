@@ -38,7 +38,7 @@
         >
         <el-button
           type="warning"
-          @click="batchPass(2)"
+          @click="batchPass(0)"
           size="mini"
           :disabled="multipleSelection.length < 1"
           icon="el-icon-s-check"
@@ -87,7 +87,7 @@
           <el-button type="text" @click="batchPass(1, scope.row.id)"
             >通过</el-button
           >
-          <el-button type="text" @click="batchPass(2, scope.row.id)"
+          <el-button type="text" @click="batchPass(0, scope.row.id)"
             >拒绝</el-button
           >
         </template>

@@ -1,54 +1,47 @@
 import request from '@/api/request2'
 // 学生管理
- const editStudentInfo = (data) => {
-   return request({method:'post',url:"/editStudentInfo",data})
+export const editStudentInfo = (data) => {
+   return request({method:'post',url:"/system/user/editStudentInfo",data})
 } 
 
- const checkStudentInfo = (data) => {
-   return request({method:'post',url:"/checkStudentInfo",data})
+export  const checkStudentInfo = (data) => {
+   return request({method:'post',url:"/system/user/checkStudentInfo",data})
 } 
- const queryStudentByPage = (data) => {
-   return request({method:'post',url:"/queryStudentByPage",data})
+export const queryStudentByPage = (data) => {
+   return request({method:'post',url:"/system/user/queryStudentByPage",data})
 } 
- const getSutdentById = (data) => {
-   return request({method:'post',url:"/getSutdentById",data})
+export  const getSutdentById = (params) => {
+   return request({method:'get',url:"/system/user/getStudentById",params})
 } 
 //教师管理
- const editTeacherInfo = (data) => {
-   return request({method:'post',url:"/editTeacherInfo",data})
+export const editTeacherInfo = (data) => {
+   return request({method:'post',url:"/system/user/editTeacherInfo",data})
 } 
 
- const checkTeacherInfo = (data) => {
-   return request({method:'post',url:"/checkTeacherInfo",data})
+export  const checkTeacherInfo = (data) => {
+   return request({method:'post',url:"/system/user/checkTeacherInfo",data})
 } 
- const queryTeacherByPage = (data) => {
-   return request({method:'post',url:"/queryTeacherByPage",data})
+export  const queryTeacherByPage = (data) => {
+   return request({method:'post',url:"/system/user/queryTeacherByPage",data})
 } 
- const getTeacherById = (data) => {
-   return request({method:'post',url:"/getTeacherById",data})
+export  const getTeacherById = (params) => {
+   return request({method:'get',url:"/system/user/getTeacherById",params})
 } 
 // 访客管理
- const editVistorInfo = (data) => {
-   return request({method:'post',url:"/editStudentInfo",data})
+export  const editVisitorInfo = (data) => {
+   return request({method:'post',url:"/system/user/editVistorInfo",data})
 } 
 
- const queryVistorByPage = (data) => {
-   return request({method:'post',url:"/checkStudentInfo",data})
+export const queryVisitorByPage = (data) => {
+   return request({method:'post',url:"/system/user/queryVistorByPage",data})
 } 
- const getVistroById = (data) => {
-   return request({method:'post',url:"/getVistroById",data})
+export  const getVisitorById = (params) => {
+   return request({method:'get',url:"/system/user/getVistroById",params})
 } 
- const checkVistorInfo = (data) => {
-   return request({method:'post',url:"/checkVistorInfo",data})
+export const checkVistorInfo = (data) => {
+   return request({method:'post',url:"/system/user/checkVistorInfo",data})
 } 
 // 获取学校下的组织
- const getOrgsBySchoolId = (data) => {
-   return request({method:'post',url:"/getOrgsBySchoolId",data})
+ export const getOrgsBySchoolId = (data) => {
+   return request({method:'post',url:"/system/user/getOrgsBySchoolId",data})
 } 
-export {
-   editStudentInfo, checkStudentInfo, queryStudentByPage, getSutdentById,
-   editTeacherInfo, checkTeacherInfo, queryTeacherByPage, getTeacherById,
-   editVistorInfo,queryVistorByPage,getVistroById,checkVistorInfo,getOrgsBySchoolId
-   
-
-}

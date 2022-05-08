@@ -1,244 +1,291 @@
 <template>
   <div>
-    <el-card shadow="never"  style="margin:15px 0;">
-       <i class="el-icon-tickets"></i>
-      <span>数据列表</span>
-      <div style="float:right;margin-right:15px">
-      <el-button type="" size="mini" @click="alertAddInfo()">添加</el-button>
-      <el-button type="primary"  size="mini" @click="goback()">返回上级</el-button>
-       </div>
-    </el-card>
-    <el-table v-loading="loading" :data="org" style="width: 100%">
-      <el-table-column prop="code" label="组织编码" width="width">
-      </el-table-column>
-      <el-table-column prop="name" label="名称" width="width">
-      </el-table-column>
-      <el-table-column prop="year" label="学年" width="width">
-      </el-table-column>
-      <el-table-column width="width" label="设置">
-        <template slot-scope="scope">
+      
+    <el-button type="primary" @click="alertAddInfo">添加</el-button>
+    <!-- <el-tree
+       default-expand-all
+       :data="allOrg"
+        node-key="id"
+       :props="{
+        children: 'children',
+        label: 'name'
+      }"
+    >
+     <span class="custom-tree-node" slot-scope="{ node, data }">
+        <span>{{ node.label }}</span>
+        <span>组织编码:{{data.code}}</span>
+        <span>学年:{{data.year}}</span>
+        <span>
           <el-button
-            v-show="scope.row.lev != 3"
             type="text"
-            @click="queryLower(scope.row.id)"
-          >
-            查看下级</el-button
-          >
-
-          <!-- <el-button v-show="scope.row.lev !=1" type="text" @click="reqGetOrgByParentId(scope.row.parentId)"> 返回上级</el-button> -->
-        </template>
-      </el-table-column>
-      <el-table-column width="200px" label="操作">
-        <template slot-scope="scope">
-          <el-button
-            type="primary"
             size="mini"
-            @click="alertUpdate(scope.row)"
-            style="margin-right:15px"
-          >
-            编辑</el-button
-          >
-          <el-popconfirm
-            title="是否确认删除(下级组织也会被删除)?"
-            @confirm="deleteOrg(scope.row)"
-          >
-            <el-button type="danger" size="mini" slot="reference"
-              >删除</el-button
+            icon="el-icon-edit"
+            @click="alertUpdate(data)">
+            
+          </el-button>
+           <el-popconfirm
+              title="是否确认删除(下级组织也会被删除)?"
+              @confirm="deleteOrg(data)"
             >
-          </el-popconfirm>
-        </template>
-      </el-table-column>
-    </el-table>
+              <el-button
+                size="mini"
+                type="text"
+                icon="el-icon-delete"
+                slot="reference"
+              >
+              </el-button>
+            </el-popconfirm>
+         
+        </span>
+      </span>
+    </el-tree> -->
+     <el-table
+    :data="allOrg"
+    style="width: 100%;margin-bottom: 20px;"
+    row-key="id"
+    border
+    default-expand-all
+    :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
+    <el-table-column
+      prop="name"
+      label="名称"
+      sortable
+      width="180">
+    </el-table-column>
+    <el-table-column
+      prop="code"
+      label="组织编码"
+      sortable
+      width="180">
+    </el-table-column>
+    <el-table-column
+      prop="year"
+      label="学年">
+    </el-table-column>
+    <el-table-column label="操作">
+       <template slot-scope="scope">
+            <el-button
+            type="text"
+            size="mini"
+            @click="alertUpdate(scope.row)">
+              修改
+          </el-button>
+           <el-popconfirm
+              title="是否确认删除(下级组织也会被删除)?"
+              @confirm="deleteOrg(scope.row)"
+            >
+              <el-button
+                size="mini"
+                type="text"
+                slot="reference"
+              >
+              删除
+              </el-button>
+            </el-popconfirm>
+       </template>
+    </el-table-column>
+  </el-table>
 
     <el-dialog
-      :title="staticForm.title + levName"
-      :visible.sync="dialogFormVisible"
+      :title="staticForm.title"
+      :visible.sync="formDialog"
+      width="width"
+      
+    
     >
-      <el-form
-        label-position="top"
-        :model="form"
-        ref="ruleForm"
-        :rules="formRules"
-      >
-        <el-form-item :label="levName + '名称'" prop="name">
-          <el-input v-model="form.name" autocomplete="off"></el-input>
+      <el-form    ref="ruleForm" label-width="120px" label-position="left"
+          :rules="formRules" :model="form">
+        <el-form-item label="学校/年级/班级 ">
+          <el-select v-model="form.lev" placeholder="">
+            <el-option
+              :key="item.value"
+              v-for="item in levOptions"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="组织编码" prop="code">
-          <el-input v-model="form.code" autocomplete="off"></el-input>
+         <el-form-item label="组织编码" prop="code">
+            <el-input v-model="form.code" autocomplete="off"></el-input>
+          </el-form-item>
+        <el-form-item label="名称">
+          <el-input v-model="form.name"></el-input>
         </el-form-item>
-        <el-form-item label="学年" prop="year" v-if="curOrgLev != 1">
-          <el-date-picker
-            v-model="form.year"
-            type="year"
-            placeholder="选择年"
-            format="yyyy 年 "
-            value-format="yyyy"
-            :picker-options="staticForm.pickerOptions"
+         <el-form-item label="上级组织" v-if="form.lev != 1">
+          <el-cascader
+            :options="allOrg"
+            v-model="form.parentId"
+            :show-all-levels="false"
+            collapse-tags
+            :props="{
+                emitPath:false,
+              checkStrictly: true,
+              label: 'name',
+              value: 'id',
+              multiple: false,
+            }"
+            clearable
+          ></el-cascader>
+        </el-form-item>
+        <el-form-item
+            label="学年"
+            prop="year"
+           v-if="form.lev != 1"
           >
-          </el-date-picker>
-        </el-form-item>
+            <el-date-picker
+              v-model="form.year"
+              type="year"
+              placeholder="选择年"
+              :picker-options="staticForm.pickerOptions"
+            >
+            </el-date-picker>
+          </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submitEditForm()">确 定</el-button>
+      <div slot="footer">
+        <el-button @click="formDialog = false">取 消</el-button>
+        <el-button type="primary" @click="submitEditForm()"
+          >确 定</el-button
+        >
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { editOrg, getOrgByParentId, getQueryOrg } from "@/api/index.js";
+function treeing(arr) {
+  let tree = [];
+  const map = {};
+  for (let item of arr) {
+    // 一个新的带children的结构
+    let newItem = (map[item.id] = {
+      ...item,
+      children: [],
+    });
+    if (map[item.parentId]) {
+      // 父节点已存进map则在父节点的children添加新元素
+      let parent = map[item.parentId];
+      parent.children.push(newItem);
+    } else {
+      // 没有父节点，在根节点添加父节点
+      tree.push(newItem);
+    }
+  }
+  return tree;
+}
+import { getAllOrg,editOrg } from "@/api";
 export default {
   data() {
     return {
-      loading: false,
-      org: [],
-      dialogFormVisible: false,
+      levOptions: [
+        {
+          value: "1",
+          label: "学校",
+        },
+        {
+          value: "2",
+          label: "年级",
+        },
+        {
+          value: "3",
+          label: "班级",
+        },
+      ],
+      formDialog: false,
+      staticForm:{
+        title:"添加"
+      },
       form: {
-        code: "",
-        id: "1",
+        ope:'1',
+        state:"1",
+        id:"",
+        parentId: '',
         lev: "",
         name: "",
-        ope: "",
-        parentId: "",
-        state: "1",
-        year: "",
-      },
-
-      staticForm: {
-        title: "",
-        orgName: "",
-        pickerOptions: {
-          disabledDate(time) {
-            return time.getTime() > Date.now();
-          },
-        },
-      },
-      formRules: {
-        code: [{ required: true, message: "请输入组织编码", trigger: "blur" }],
-        name: [{ required: true, message: "请输入名称", trigger: "blur" }],
-        year: [{ required: true, message: "请输入学年", trigger: "change" }],
-      },
-      curOrgLev: 1,
-    };
-  },
-
-  computed: {
-    levName() {
-      let val = this.curOrgLev;
-      if (val == 1) {
-        return "学校";
-      } else if (val == 2) {
-        return "年级";
-      } else if (val == 3) {
-        return "班级";
-      } else {
-        return "";
-      }
-    },
-  },
-  methods: {
-    async alertUpdate(item) {
-      this.staticForm = {
-        title: "修改",
-      };
-      // 修改之前先查询 因为其它人可能在此期间修改了数据
-      try {
-        const res = await getQueryOrg({ id: item.id });
-        if (res.data.code == 100) {
-          Object.assign(this.form, res.data.data);
-          this.form.ope = 2;
-           this.$nextTick(() => {
-               this.$refs['ruleForm'].clearValidate()
-            })
-        }
-      } catch (error) {
-        console.log(error);
-      }
-
-      this.dialogFormVisible = !this.dialogFormVisible;
-    },
-    alertAddInfo() {
-      this.staticForm = {
-        title: "添加",
-      };
-      this.form = {
-        ope: "1",
-        state: "1",
-        name: "",
-        parentId: this.parentId,
-        lev: this.curOrgLev,
-        id: "",
         code: "",
         year: "",
-      };
-         this.$nextTick(() => {
-        this.$refs['ruleForm'].clearValidate()
-      })
-      this.dialogFormVisible = !this.dialogFormVisible;
-    },
-    // 上传添加 修改表单
-    submitEditForm() {
-      this.$refs.ruleForm.validate(async (valid) => {
-        if (valid) {
-          try {
-            const res = await editOrg(this.form);
-            if (res.data.code == 100) {
-              this.reqGetOrgByParentId(this.parentId);
-              this.dialogFormVisible = false;
-            }
-          } catch (error) {
-            console.log(error);
-          }
-        }
-      });
-    },
+      },
 
-    async deleteOrg({ id, parentId }) {
+      allOrg: [],
+    };
+  },
+  methods:{
+      alertAddInfo(){
+        this.form = {
+        name: "",
+        parentId:'',
+        lev: '',
+     
+        ope: "1",
+        code:'',
+        state:'1',
+        year:""
+      };
+        this.formDialog = true
+      },
+    alertUpdate(item) {
+      this.form = {
+        name: item.name,
+        parentId:item.parentId,
+        lev:item.lev,
+        id:item.id,
+        ope: "2",
+        code:item.code,
+        state:'1',
+        year: item.year,
+      };
+      this.formDialog = !this.formDialog;
+    },
+        // 上传添加 修改表单
+   async submitEditForm() {
+        //  if(this.form.parentId.instace){
+        //      this.form.parentId = this.form.parentId.pop()
+        //  }
+         if(!this.form.parentId){
+           this.form.parentId =-1
+         }
+          const res = await editOrg(this.form);
+          if(res.data.code ==100){
+              this.reqGetAllOrg();
+              this.$message.success('操作成功')
+          }
+    
+            this.formDialog = false;
+       
+    },
+    async deleteOrg(item) {
       const res = await editOrg({
-        id,
-        ope: "0",
+        id:item.id,
+        ope:'0'
       });
       if (res.data.code == 100) {
         this.$message({
           message: "删除成功",
           type: "success",
         });
-
-        this.reqGetOrgByParentId(parentId);
+        this.reqGetAllOrg()
       }
     },
-    async reqGetOrgByParentId(parentId) {
-      this.loading = true;
-      this.parentId = parentId;
-      try {
-        const res = await getOrgByParentId({ parentId });
-        if (res.data.code == 100) {
-          this.org = res.data.data;
-          this.loading = false;
-        } else {
-          this.loading = false;
-        }
-      } catch (err) {
-        this.loading = false;
-      }
-    },
-    queryLower(id) {
-      if (this.curOrgLev < 4) {
-        this.curOrgLev += 1;
-        console.log("curOrgLev", this.curOrgLev);
-      }
-      this.reqGetOrgByParentId(id);
-    },
-    goback() {
-      this.curOrgLev = 1;
-      this.reqGetOrgByParentId(-1);
+   async reqGetAllOrg(){
+     const res = await getAllOrg();
+     this.allOrg = treeing(res.data.data);
     },
   },
-  mounted() {
-    this.reqGetOrgByParentId(-1);
+   mounted() {
+    this.reqGetAllOrg()
   },
 };
 </script>
 
-<style></style>
+<style scoped>
+  .custom-tree-node {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    font-size: 14px;
+    padding-right: 8px;
+    text-align: center;
+  }
+
+</style>>
+

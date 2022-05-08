@@ -10,7 +10,6 @@
     <el-table   v-loading="loading" :data="allRolesTable" style="width: 100%">
       <el-table-column
         header-align="center"
-    
          type="index"
         label="序号" >
       </el-table-column>

@@ -94,14 +94,13 @@ export const asyncRouterMap = [
         meta: {title:"教师管理"}
       },
       {
-        path: "/system/userManage/visitorManage",
+        path: "/system/userManage/vistiorManage",
         name: "visitorManage",
         component: () => import("@/views/system/userManage/visitorManage"),
         meta: {title:"访客添加"}
       },
       {
         path: "/system/userManage/visitorCheck",
-        
         name: "visitorCheck",
         component: () => import("@/views/system/userManage/visitorCheck"),
         meta: {title:"访客审核"}
@@ -113,7 +112,7 @@ export const asyncRouterMap = [
         meta: {title:"等级管理"}
       },
       {
-        path:  "/system/baseMantain/pointRule",
+        path:  "/system/pointRule/pointRule",
         name: "pointRule",
         component: () => import("@/views/system/baseMantain/pointRule"),
         meta: {title:"积分维护"}

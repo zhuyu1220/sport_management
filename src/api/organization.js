@@ -68,3 +68,6 @@ export const syncStudentGradeInfo = () => {
    return request({method:'get',url:"/syncStudentGradeInfo",})
 } 
 
+export const getAllOrg = (params) => {
+  return request({method:'get',url:"/system/org/queryOrgAll",params})
+}
